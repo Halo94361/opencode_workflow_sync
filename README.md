@@ -175,6 +175,9 @@ cmd /c mklink /J "$CONFIG_DIR\agents" "$REPO_PATH\.opencode\agents"
 
 # 创建 skills 链接（会覆盖现有目录）
 cmd /c mklink /J "$CONFIG_DIR\skills" "$REPO_PATH\.opencode\skills"
+
+# 创建 tools 链接（数学计算工具）
+cmd /c mklink /J "$CONFIG_DIR\tools" "$REPO_PATH\.opencode\tools"
 ```
 
 #### 方案 B：项目级使用（不破坏现有配置）
@@ -193,9 +196,10 @@ if (-not (Test-Path "$CURRENT_PROJECT\.opencode")) {
     New-Item -ItemType Directory -Path "$CURRENT_PROJECT\.opencode" | Out-Null
 }
 
-# 链接 agents 和 skills 到当前项目的 .opencode 下
+# 链接 agents、skills 和 tools 到当前项目的 .opencode 下
 cmd /c mklink /J "$CURRENT_PROJECT\.opencode\agents" "$WORKFLOW_REPO\.opencode\agents"
 cmd /c mklink /J "$CURRENT_PROJECT\.opencode\skills" "$WORKFLOW_REPO\.opencode\skills"
+cmd /c mklink /J "$CURRENT_PROJECT\.opencode\tools" "$WORKFLOW_REPO\.opencode\tools"
 
 Write-Host "✓ 已完成！在该项目目录下使用 OpenCode 即可加载此工作流配置。"
 ```
@@ -231,6 +235,7 @@ Remove-Item "$env:USERPROFILE\.config\opencode\skills" -Force
 C:\Users\<用户名>\.config\opencode\
 ├── agents/  ──────────────────► D:\GitLab\opencode_workflow_sync\.opencode\agents
 ├── skills/  ──────────────────► D:\GitLab\opencode_workflow_sync\.opencode\skills
+├── tools/   ──────────────────► D:\GitLab\opencode_workflow_sync\.opencode\tools
 └── opencode.json              # 主配置文件（可选）
 ```
 
@@ -239,6 +244,65 @@ C:\Users\<用户名>\.config\opencode\
 ### 方案 B：项目级使用
 
 直接在此仓库目录下使用 OpenCode，无需任何配置。它会自动从当前目录的 `.opencode/` 加载 agents 和 skills。
+
+---
+
+## 数学计算工具
+
+本项目提供数学计算工具集，位于 `.opencode/tools/math.ts`，包含以下功能：
+
+### 工具列表
+
+| 工具 | 功能 | 示例 |
+|------|------|------|
+| `math_add` | 两数相加 | `math_add(a: 2, b: 3)` → `5` |
+| `math_subtract` | 两数相减 | `math_subtract(a: 10, b: 3)` → `7` |
+| `math_multiply` | 两数相乘 | `math_multiply(a: 4, b: 5)` → `20` |
+| `math_divide` | 两数相除 | `math_divide(a: 10, b: 2)` → `5` |
+| `math_sqrt` | 平方根 | `math_sqrt(a: 16)` → `4` |
+| `math_power` | 幂运算 | `math_power(base: 2, exp: 3)` → `8` |
+| `math_log` | 对数运算 | `math_log(a: 100, base: 10)` → `2` |
+| `math_exp` | e 的幂 | `math_exp(a: 2)` → `7.389...` |
+| `math_sin` | 正弦（弧度） | `math_sin(a: 1.5708)` → `1` |
+| `math_cos` | 余弦（弧度） | `math_cos(a: 0)` → `1` |
+| `math_tan` | 正切（弧度） | `math_tan(a: 0.7854)` → `1` |
+| `math_asin` | 反正弦 | `math_asin(a: 1)` → `1.5708...` |
+| `math_acos` | 反余弦 | `math_acos(a: 1)` → `0` |
+| `math_atan` | 反正切 | `math_atan(a: 1)` → `0.7854...` |
+| `math_floor` | 向下取整 | `math_floor(a: 4.7)` → `4` |
+| `math_ceil` | 向上取整 | `math_ceil(a: 4.1)` → `5` |
+| `math_round` | 四舍五入 | `math_round(a: 4.5)` → `5` |
+| `math_abs` | 绝对值 | `math_abs(a: -5)` → `5` |
+| `math_factorial` | 阶乘 | `math_factorial(a: 5)` → `120` |
+| `math_gcd` | 最大公约数 | `math_gcd(a: 12, b: 8)` → `4` |
+| `math_max` | 最大值 | `math_max(values: [1,5,3])` → `5` |
+| `math_min` | 最小值 | `math_min(values: [1,5,3])` → `1` |
+| `math_deg2rad` | 度转弧度 | `math_deg2rad(a: 180)` → `3.1415...` |
+| `math_rad2deg` | 弧度转度 | `math_rad2deg(a: 3.1416)` → `180` |
+
+### 使用方式
+
+在 OpenCode 对话中直接调用数学工具，例如：
+
+```
+计算 2 的平方根
+求 5 的阶乘
+计算 sin(π/2)
+```
+
+> **提示**：三角函数使用弧度制，如需角度转换可使用 `math_deg2rad` 和 `math_rad2deg`。
+
+### 全局/项目级配置
+
+如需在其他项目中使用这些数学工具，可通过 Junction 链接 `.opencode/tools` 目录：
+
+```powershell
+# 全局配置
+cmd /c mklink /J "$env:USERPROFILE\.config\opencode\tools" "D:\GitLab\opencode_workflow_sync\.opencode\tools"
+
+# 项目级配置
+cmd /c mklink /J "你的项目路径\.opencode\tools" "D:\GitLab\opencode_workflow_sync\.opencode\tools"
+```
 
 ---
 
