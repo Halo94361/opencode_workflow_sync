@@ -55,11 +55,13 @@ model: anthropic/claude-sonnet-4-20250514
 temperature: 0.1
 permission:
   edit: deny
-  bash: false
+  bash: deny
 ---
 
 你是一个代码审查专家，专注于安全、性能和可维护性。
 ```
+
+详细编写规范请参考 [AGENT_build_assist.md](AGENT_build_assist.md)
 
 ### 核心配置项
 
