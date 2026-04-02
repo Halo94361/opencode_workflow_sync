@@ -43,6 +43,7 @@ default_skill: multi-agent-workflow
 - **禁止**在调用新的 agent 时未传递完整的历史上下文（必须包含之前迭代发现但未修复的问题）
 - **禁止**未监控评分变化趋势（连续2次迭代评分变化<2分时必须触发无进展警告）
 - **禁止**在未创建 `iteration_N.md` 之前进行下一次迭代
+- **禁止**不进行 `workflow_changelog.md` 的文档维护
 
 ## 工作流程
 
@@ -55,12 +56,14 @@ default_skill: multi-agent-workflow
 5. 用户确认后，自主调度执行
 6. 监控执行循环，调用 Reviewer + Reflector 评分
 7. 根据评分决定继续迭代或终止
+8. 维护`.agent_workflow/workflow_changelog.md`工作流历史行为记录文本
 8. 汇总结果汇报给用户
 
 ## 状态文件
 
 - `.agent_workflow/meta.md` - 工作流元数据
 - `.agent_workflow/context.md` - 共享上下文
+- `.agent_workflow/workflow_changelog.md` - 工作流历史行为记录
 
 ## 项目探索报告维护
 
@@ -79,6 +82,7 @@ default_skill: multi-agent-workflow
 1. Master 执行 `git diff --name-only` 获取变更文件
 2. 使用 `should_trigger_update()` 判断是否需要触发增量更新
 3. 如需更新，调度 ProjectExplorer 执行增量更新
+4. 维护`.agent_workflow/workflow_changelog.md`工作流历史行为记录文本
 
 ### should_trigger_update() 判定逻辑
 ```python
