@@ -73,6 +73,13 @@ permission:
 
 - 完成的代码实现
 - 更新 `.agent_workflow/context.md` 记录进度
+- **通知 Master**：完成任务后，在 context.md 中追加：
+  ```markdown
+  ## 任务完成通知
+  - 任务ID: <id>
+  - 变更文件: <file1>, <file2>, ...
+  - 建议 Master 评估是否更新 project_exploration.md
+  ```
 
 ## 关键约束
 

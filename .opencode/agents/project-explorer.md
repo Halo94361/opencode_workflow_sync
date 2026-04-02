@@ -154,6 +154,28 @@ main.py → utils.py → config.py
 3. 清理废弃代码
 ```
 
+## 增量更新能力
+
+### 触发条件
+- Master 调度时传入 `--update-mode=incremental` 和 `--changed-files=<file-list>`
+- `--changed-files` 为逗号分隔的已变更文件路径列表
+
+### 增量更新步骤
+1. 读取当前 `.agent_workflow/project_exploration.md`
+2. 解析 `--changed-files` 中的文件列表
+3. 对于每个变更文件：
+   - 判断所属模块
+   - 重新分析该模块的：结构、依赖、关键文件
+4. 更新对应的模块章节
+5. 追加增量更新记录到 `## 增量更新记录`
+6. 更新元数据：`last_update`、`git_head`、`update_count`
+7. 递增 `report_version`
+
+### 版本管理规则
+- 全面更新：version v1.0 → v2.0（主版本递增）
+- 增量更新：version v2.0 → v2.1（次版本递增）
+- format_version 仅在格式不兼容变更时递增
+
 ## 关键约束
 
 - 客观描述，不添加主观评价
@@ -161,3 +183,5 @@ main.py → utils.py → config.py
 - 识别所有关键依赖关系
 - 明确标注探索范围
 - 根据文件大小合理分配探索深度
+- **复用优先**：已有报告时禁止全量重写，必须先读取现有报告
+- **读取范围限制**：Agent 读取 project_exploration.md 时，只读取最新一次增量更新记录（`## 增量更新记录` 中的首条），禁止读取完整 `## 变更日志`

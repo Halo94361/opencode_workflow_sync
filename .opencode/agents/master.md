@@ -48,8 +48,84 @@ permission:
 - `.agent_workflow/meta.md` - 工作流元数据
 - `.agent_workflow/context.md` - 共享上下文
 
+## 项目探索报告维护
+
+### 启动时检查
+1. 检查 `.agent_workflow/project_exploration.md` 是否存在
+2. 如果存在，读取 `## 元数据` 中的 `git_head`
+3. 执行 `git rev-parse HEAD` 获取当前 HEAD
+4. 如果 `git_head` 与当前 HEAD 不一致，标记为"可能过期"
+
+### 复用判断
+- 如果报告存在且 `git_head` 匹配当前 HEAD → 复用现有报告
+- 如果报告不存在或 `git_head` 不匹配 → 触发 ProjectExplorer 探索
+
+### 任务完成检测
+每个 Coder/执行者 任务完成后：
+1. Master 执行 `git diff --name-only` 获取变更文件
+2. 使用 `should_trigger_update()` 判断是否需要触发增量更新
+3. 如需更新，调度 ProjectExplorer 执行增量更新
+
+### should_trigger_update() 判定逻辑
+```python
+def should_trigger_update(git_diff_files: list[str], project_scale: str) -> tuple[bool, str]:
+    """
+    判断是否需要触发增量更新
+    
+    Args:
+        git_diff_files: git diff --name-only 的结果列表
+        project_scale: "small" / "medium" / "large"
+    
+    Returns:
+        (should_update, reason)
+    """
+    # 计算目录级变更
+    dir_changes = set()
+    file_changes = set()
+    for f in git_diff_files:
+        parts = f.split('/')
+        if len(parts) >= 2:
+            dir_changes.add(parts[0])
+        file_changes.add(f)
+    
+    # 阈值配置（按项目规模）
+    thresholds = {
+        "small": 3,    # >3 个文件或 >1 个目录
+        "medium": 5,   # >5 个文件或 >2 个目录
+        "large": 10    # >10 个文件或 >3 个目录
+    }
+    threshold = thresholds.get(project_scale, 5)
+    
+    # 判定规则
+    if len(dir_changes) >= 1 and any(
+        d in ['src', 'lib', 'drivers', 'app', 'components', 'agents', 'skills', 'modules']
+        for d in dir_changes
+    ):
+        return True, f"目录级变更: {dir_changes}"
+    
+    if len(file_changes) > threshold:
+        return True, f"文件变更数({len(file_changes)})超过阈值({threshold})"
+    
+    # 特定文件变更检测
+    critical_files = ['CMakeLists.txt', 'Makefile', 'setup.py', 'requirements.txt', 
+                      'package.json', 'go.mod', 'Cargo.toml', 'pyproject.toml']
+    if any(f in file_changes for f in critical_files):
+        return True, "关键配置文件变更"
+    
+    return False, f"变更不显著: {len(file_changes)} 文件, {len(dir_changes)} 目录"
+```
+
+### 更新阈值配置
+| 项目规模 | 文件阈值 | 目录阈值 |
+|----------|----------|----------|
+| small (<50 文件) | >3 | ≥1 |
+| medium (50-200) | >5 | ≥2 |
+| large (>200) | >10 | ≥3 |
+
 ## 关键约束
 
 - 用户干预点仅限于：计划确认、主动求助
 - 连续2次迭代无进展时必须向用户求助
 - 评分≥90或达到3次迭代时终止工作流
+- **复用优先**：已有 `project_exploration.md` 时必须先读取复用，禁止直接全量探索
+- **更新评估**：Coder 等修改代码后，Master 必须评估是否需要更新报告
