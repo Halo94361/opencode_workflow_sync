@@ -17,11 +17,12 @@
 ```yaml
 ---
 description: Agent描述（简洁明了）
-mode: subagent           # primary | subagent
+mode: subagent           # primary | subagent | all
 hidden: true             # true | false（是否在UI中隐藏）
-permission:
-  edit: allow           # allow | deny | ask
-  bash: deny            # allow | deny | ask（注意：必须使用 deny，禁止省略）
+tools:
+  write: true            # true | false
+  edit: true            # true | false
+  bash: true            # true | false
 ---
 ```
 
@@ -32,9 +33,10 @@ permission:
 description: <职责描述>
 mode: subagent
 hidden: true
-permission:
-  edit: allow
-  bash: deny
+tools:
+  write: false
+  edit: false
+  bash: false
 ---
 
 # <Agent名称> Agent
@@ -99,6 +101,7 @@ permission:
 |----|------|
 | `primary` | 主交互代理，可通过 Tab 键切换 |
 | `subagent` | 专精任务代理，可通过 @ 提及调用 |
+| `all` | 默认值，兼具有 primary 和 subagent 特性 |
 
 ### hidden（隐藏代理）
 
@@ -107,25 +110,37 @@ permission:
 | `true` | 在 UI 中隐藏，不显示在代理列表 |
 | `false` | 正常显示 |
 
-### permission（工具权限）
+**注意**：仅适用于 `mode: subagent` 的代理
+
+### tools（工具权限）
+
+使用 `tools` 配置控制代理中可用的工具：
+
+```yaml
+tools:
+  write: false  # 禁用文件写入
+  edit: false   # 禁用编辑
+  bash: false   # 禁用 bash 命令
+```
+
+### permission（操作权限）
+
+与 tools 类似，但支持更细粒度的控制：
 
 | 值 | 说明 |
 |----|------|
-| `allow` | 允许使用 |
-| `deny` | 禁止使用 |
-| `ask` | 使用前需确认 |
+| `"allow"` | 允许使用 |
+| `"deny"` | 禁止使用 |
+| `"ask"` | 使用前需确认 |
 
-**注意**：`bash` 权限必须使用 `deny`，不能使用 `false`。
-
-```markdown
-# 正确
+```yaml
 permission:
-  bash: deny
-
-# 错误
-permission:
-  bash: false
+  edit: "deny"
+  bash: "deny"
+  webfetch: "allow"
 ```
+
+**注意**：权限值必须使用字符串格式（加引号）。
 
 ---
 
@@ -135,6 +150,8 @@ permission:
 
 - 项目级：`.opencode/skills/<name>/SKILL.md`
 - 全局级：`~/.config/opencode/skills/<name>/SKILL.md`
+- Claude 兼容：`.claude/skills/<name>/SKILL.md`
+- Agent 兼容：`.agents/skills/<name>/SKILL.md`
 
 ### YAML Front Matter
 
@@ -154,6 +171,7 @@ description: 技能描述（1-1024字符）
 | 前缀 | 不以 `-` 开头 |
 | 后缀 | 不以 `-` 结尾 |
 | 连接 | 不含连续 `--` |
+| 正则 | `^[a-z0-9]+(-[a-z0-9]+)*$` |
 
 ### Skill 结构模板
 
@@ -251,19 +269,19 @@ skills/
 
 ### 新增 Agent 前检查
 
-- [ ] YAML front matter 完整（description, mode, hidden, permission）
+- [ ] YAML front matter 完整（description, mode, hidden, tools）
 - [ ] 至少 11 条禁止项
 - [ ] 禁止项使用 `**禁止**` 格式
 - [ ] 适用场景包含标签和具体场景
 - [ ] 输入输出明确
 - [ ] 评分维度关联
 - [ ] 关键约束清晰
-- [ ] `bash` 权限使用 `deny` 而非 `false`
+- [ ] `bash` 权限使用 `deny`（字符串）而非 `false`
 
 ### 新增 Skill 前检查
 
 - [ ] YAML front matter 完整（name, description）
-- [ ] 命名符合规则（小写+连字符）
+- [ ] 命名符合规则（小写+连字符，正则验证）
 - [ ] 包含 Agent 角色定义
 - [ ] 包含任务标签匹配
 - [ ] 包含执行流程
@@ -282,19 +300,20 @@ skills/
 
 ## 权限控制示例
 
-### 基本权限控制
+### tools 配置（推荐方式）
 
-```json
-{
-  "permission": {
-    "edit": "deny",
-    "bash": "deny",
-    "webfetch": "allow"
-  }
-}
+```yaml
+---
+description: 只读分析代理
+mode: subagent
+tools:
+  write: false
+  edit: false
+  bash: false
+---
 ```
 
-### 细粒度权限控制
+### permission 细粒度控制
 
 ```json
 {
@@ -303,7 +322,7 @@ skills/
     "bash": {
       "*": "ask",
       "git status *": "allow",
-      "git push": "deny"
+      "git log *": "allow"
     },
     "webfetch": "allow"
   }
