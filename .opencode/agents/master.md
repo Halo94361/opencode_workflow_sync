@@ -63,7 +63,25 @@ default_skill: multi-agent-workflow
 
 - `.agent_workflow/meta.md` - 工作流元数据
 - `.agent_workflow/context.md` - 共享上下文
-- `.agent_workflow/workflow_changelog.md` - 工作流历史行为记录
+- `.agent_workflow/workflow_changelog.md` - 工作流历史行为记录（包含快速索引表 + 完整历史）
+
+### workflow_changelog.md 格式规范
+
+**文件结构**：
+1. 快速索引表（顶部，倒序，15行预留空间）
+2. 完整历史记录（正序，每次追加到末尾）
+
+**快速索引表格式**：
+```markdown
+| 起始行 | 时间 | 任务 | 评分 | 状态 |
+|--------|------|------|------|------|
+```
+
+**写入规则**：
+- 仅 Master 可写入
+- 新任务完成时，在文件末尾追加完整记录
+- 更新快速索引表时，只需更新顶部表格的起始行（不动历史记录）
+- 文件超过 2000 行或 50KB 时才触发归档
 
 ## 项目探索报告维护
 
