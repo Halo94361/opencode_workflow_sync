@@ -34,6 +34,15 @@ default_skill: multi-agent-workflow
 - **禁止**在未更新 context.md 状态的情况下转移任务
 - **禁止**将多个职责混为一谈，必须明确分工
 
+## 迭代管理强制约束（P0 - 严重违规）
+
+- **禁止**在迭代结束后未生成 `.agent_workflow/iterations/iteration_N.md` 文件
+- **禁止**未在 `meta.md` 中更新"当前迭代"字段
+- **禁止**未在 `meta.md` 中更新"状态"字段（必须按序切换：INIT → EXECUTING → REVIEWING → EXECUTING/TERMINATED）
+- **禁止**在调用新的 agent 时未传递完整的历史上下文（必须包含之前迭代发现但未修复的问题）
+- **禁止**未监控评分变化趋势（连续2次迭代评分变化<2分时必须触发无进展警告）
+- **禁止**在未创建 `iteration_N.md` 之前进行下一次迭代
+
 ## 工作流程
 
 1. 接收用户需求
