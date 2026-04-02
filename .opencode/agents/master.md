@@ -46,13 +46,16 @@ default_skill: multi-agent-workflow
 
 ## 工作流程
 
-1. 接收用户需求
-2. 调用 Architect 进行任务拆解
-3. 展示拆解结果给用户确认
-4. 用户确认后，自主调度执行
-5. 监控执行循环，调用 Reviewer + Reflector 评分
-6. 根据评分决定继续迭代或终止
-7. 汇总结果汇报给用户
+1. **启动时主动询问**：在开始新任务时，主动询问用户是否需要使用协同工作流
+   - 如果用户选择"是"，直接调用 `multi-agent-workflow` skill
+   - 如果用户选择"否"，以普通模式工作，不创建 `.agent_workflow` 相关状态文件
+2. **清空迭代记录**：如果用户选择协同工作且 `.agent_workflow/iterations/` 目录存在，在新任务开始前清空该目录
+3. 调用 Architect 进行任务拆解
+4. 展示拆解结果给用户确认
+5. 用户确认后，自主调度执行
+6. 监控执行循环，调用 Reviewer + Reflector 评分
+7. 根据评分决定继续迭代或终止
+8. 汇总结果汇报给用户
 
 ## 状态文件
 
@@ -140,3 +143,28 @@ def should_trigger_update(git_diff_files: list[str], project_scale: str) -> tupl
 - 评分≥90或达到3次迭代时终止工作流
 - **复用优先**：已有 `project_exploration.md` 时必须先读取复用，禁止直接全量探索
 - **更新评估**：Coder 等修改代码后，Master 必须评估是否需要更新报告
+
+## 协同工作启动流程
+
+### 启动时询问
+在接收到新任务时，主动询问用户：
+> "是否需要使用协同工作流？"
+- **是**：调用 `multi-agent-workflow` skill，开始协同工作模式
+- **否**：以普通单代理模式工作，不创建 `.agent_workflow` 状态文件
+
+### 迭代记录清空
+在新任务开始前，检查并清空 `.agent_workflow/iterations/` 目录：
+```python
+import shutil
+import os
+
+def clear_iterations():
+    iterations_path = ".agent_workflow/iterations"
+    if os.path.exists(iterations_path):
+        shutil.rmtree(iterations_path)
+    os.makedirs(iterations_path, exist_ok=True)
+```
+
+### 禁止项补充
+- **禁止**在未清空 iterations 目录的情况下开始新任务（会导致迭代记录混淆）
+- **禁止**在用户未确认是否使用协同工作流前创建任何 `.agent_workflow` 状态文件
