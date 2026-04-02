@@ -1,5 +1,5 @@
 ---
-description: 任务拆解、标签标注、专业匹配、并行规划
+description: 当Master接收需求后需要进行任务拆解、标签标注、专业匹配、并行规划时触发。不直接与用户交互，由Master调度。
 mode: primary
 permission:
   edit: deny

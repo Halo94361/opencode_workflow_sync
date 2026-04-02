@@ -1,5 +1,5 @@
 ---
-description: 项目探索，分析已有项目结构、技术栈、代码架构
+description: 当Master检测到已有项目、新任务进入项目、或用户要求项目分析时自动触发。适用于explore标签任务和项目初始化阶段，不适用于全新项目开发。
 mode: subagent
 hidden: true
 permission:

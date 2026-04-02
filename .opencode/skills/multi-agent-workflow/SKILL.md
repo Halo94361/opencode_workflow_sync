@@ -1,174 +1,163 @@
 ---
 name: multi-agent-workflow
-description: Multi-Agent 协同工作流框架规范，定义 Agent 角色、状态文件、评分机制和执行循环
+description: 当用户提出复杂任务需求、要求多步骤协作、提到"使用协同工作流"、"帮我规划这个项目"或Master Agent接收用户需求时触发。适用于多Agent协同任务，不适用于简单单步问答。
+version: 1.0.0
 ---
 
-# Multi-Agent 协同工作流 Skill
+## 概述
 
-这是一个工作流调度框架，所有 Agent 必须遵循本规范。
+这是一个多Agent协同工作流调度框架。接收复杂任务需求，协调多个专业Agent（Architect、Coder、Reviewer等）分工协作，通过迭代执行和评分机制确保任务质量。
 
----
+## 前置要求
 
-## 一、Agent 角色（详细见 docs/agents.md）
+- 输入：用户提交的复杂任务需求
+- 权限：可创建和修改`.agent_workflow/`目录下的状态文件
+- 环境：Git仓库（用于项目探索）
 
-| 角色 | Mode | 职责 | 触发时机 | 输出产物 |
-|------|------|------|----------|----------|
-| Master | primary | 接收需求、调度协调 | 用户提交需求时 | meta.md |
-| Architect | primary | 任务拆解、API审查 | Master调用时 | task_list.md |
-| ProjectExplorer | subagent | 项目探索、结构分析 | 自动触发(已有项目) | project_exploration.md |
-| Coder | subagent | 代码实现(多语言) | 任务分配时 | 代码文件 |
-| Researcher | subagent | 技术调研 | 任务分配时 | 调研报告 |
-| Tester | subagent | 测试编写执行 | 任务分配时 | 测试报告 |
-| DevOps | subagent | 部署配置 | 任务分配时 | 部署脚本 |
-| DataProcessor | subagent | 数据处理 | 任务分配时 | 处理数据 |
-| SecurityExpert | subagent | 安全审查 | 任务分配时 | 安全报告 |
-| PerformanceEngineer | subagent | 性能分析 | 任务分配时 | 性能报告 |
-| IntegrationEngineer | subagent | API设计 | 任务分配时 | api_contract.md |
-| UXUIDesigner | subagent | 界面设计 | 任务分配时 | 设计文档 |
-| Reviewer | subagent | 质量评分(0.7) | 执行结束时 | scores.md |
-| Reflector | subagent | 复盘建议(0.3) | 评分后 | 复盘报告 |
-| Docer | subagent | 文档生成 | 需要时 | 技术文档 |
+## 执行流程
 
----
+| 步骤 | 名称 | 输入 | 输出 | 说明 |
+|------|------|------|------|------|
+| 1 | 接收需求 | 用户需求描述 | 触发判断 | Master判断是否触发协同工作流 |
+| 2 | 项目探索 | 项目根目录 | `project_exploration.md` | 自动检测已有项目，复用已有报告 |
+| 3 | 任务拆解 | 用户需求、project_exploration | `task_list.md` | Architect分析并生成任务列表 |
+| 4 | 用户确认 | task_list.md | 用户批准/修改/取消 | 展示任务拆解，等待用户确认 |
+| 5 | 执行循环 | task_list、用户确认 | 迭代记录、最终产出 | 最多3次迭代 |
+| 6 | 结果汇总 | 所有迭代记录 | 执行报告 | 向用户汇报最终结果 |
 
-## 二、任务标签匹配（详细见 docs/tags.md）
+### 执行循环详细说明
 
-| 标签 | 执行者 | 并行上限 |
-|------|--------|----------|
-| `[explore]` | project-explorer | 3 |
-| `[data]` | data-processor | 3 |
-| `[security]` | security-expert | 3 |
-| `[test]` | tester | 3 |
-| `[deploy]` | devops | 3 |
-| `[research]` | researcher | 3 |
-| `[performance]` | performance-engineer | 3 |
-| `[integration]` | integration-engineer | 3 |
-| `[ui]`/`[ux]`/`[design]` | ux-ui-designer | 3 |
-| `[default]` | coder | 3 |
+1. 调度执行者（Researcher/Coder/Tester等）执行任务
+2. Reviewer评分（权重0.7）+ Reflector复盘（权重0.3）
+3. **评分计算**：`最终评分 = Reviewer得分 × 0.7 + Reflector得分 × 0.3`
+4. 评分≥90终止，否则继续迭代
+5. **无进展检测**：连续2次迭代评分变化<2分时，触发无进展警告，需向用户求助
 
----
+## 输出格式
 
-## 三、项目探索流程（详细见 docs/exploration.md）
+| 迭代 | 评分 | 状态 |
+|------|------|------|
+| 1 | XX | 通过/需改进 |
+| 2 | XX | 通过/需改进 |
+| 3 | XX | 终止 |
 
-当检测到是已有项目时，自动触发项目探索。
+最终产出：优化后的代码/文档 + 工作流执行报告
 
-### 流程图
+## Gotchas
 
+- ⚠️ **任务拆解粒度**：拆解到模块级，避免过细导致上下文溢出，过粗导致质量下降
+- ⚠️ **并行任务上限**：同类任务（相同职责Agent）最多3个并行，Master负责调度防止溢出
+- ⚠️ **评分阈值**：连续2次迭代评分变化<2分时，触发无进展警告，需向用户求助
+- ⚠️ **API设计前置**：涉及API/接口时，必须先完成API契约设计，Coder禁止提前编码
+- ⚠️ **项目探索复用**：已有`project_exploration.md`时必须先读取复用，禁止直接全量探索
+- ⚠️ **changelog由Master写入**：workflow_changelog.md仅Master可写入，Agent通过Master提取关键信息
+- ⚠️ **路径规范**：使用`{baseDir}`引用路径，禁止硬编码绝对路径
+
+### 文档实时性强制约束
+
+**⚠️ 禁止跳过文档更新：各环节Agent完成操作后必须立即更新对应状态文件，禁止进入下一阶段后再补写**
+
+| 文件 | 维护者 | 更新时机 | 禁止行为 |
+|------|--------|----------|----------|
+| `.agent_workflow/meta.md` | Master | 每次迭代开始/结束 | 禁止跳过状态更新 |
+| `.agent_workflow/context.md` | 各Agent | 每次任务交接/状态变更 | 禁止遗留过期上下文 |
+| `.agent_workflow/workflow_changelog.md` | Master | 每次工作流行为后 | 仅Master写入，Agent通过Master提取 |
+| `.agent_workflow/iterations/iteration_N.md` | Master | 每次迭代结束后 | 禁止事后补写 |
+
+**验证机制**：
+- Master在任务交接前必须验证状态文件一致性
+- 状态文件时间戳与实际执行时间偏差超过5分钟时，触发警告
+- 警告后必须补全文档后才能继续执行
+
+**违反处理**：若文档未实时更新，工作流状态将不一致，后续Agent可能基于过期信息决策，导致任务失败。此时必须回溯并补全文档后才能继续。
+
+### 迭代记录归档规则
+
+**⚠️ 新任务启动时：必须归档旧迭代记录，禁止直接清空**
+
+- 执行时机：用户确认启动新任务后、第一次迭代开始前
+- 执行者：Master
+- 归档操作：
+  1. 将`.agent_workflow/iterations/`目录重命名为`iterations_archive/`
+  2. 在`iterations_archive/`下创建时间戳子目录：`YYYYMMDD_HHmmss_old_task_name/`
+  3. 将旧迭代记录移动到归档目录
+- 追溯方式：通过`workflow_changelog.md`中的任务ID关联归档目录
+- **禁止**：直接删除旧记录或覆盖
+
+### workflow_changelog.md增量更新规则
+
+**⚠️ workflow_changelog.md始终维护增量更新：每次工作流行为后立即写入本次工作总结**
+
+- 写入权限：仅Master
+- 读取权限：Agent需要历史信息时，通过Master读取并提取相关部分
+- 格式要求：每次写入包含时间戳、代理、操作、结果四要素
+- 增量原则：不删除历史记录，仅追加新条目
+
+**文件大小控制**：
+- 当文件超过500行或20KB时，触发归档
+- 归档操作：压缩当前文件为`workflow_changelog_YYYYMMDD.tar.gz`，创建新文件
+- 文件头部保留最近10条记录的摘要
+
+**示例格式**：
+```markdown
+## YYYY-MM-DD | Task: [任务名]
+
+### 执行概要
+- **任务类型**: xxx
+- **迭代次数**: X
+- **最终评分**: XX分
+
+### 代理调用记录
+| 时间 | 代理 | 操作 | 结果 |
+|------|------|------|------|
+| YYYY-MM-DD | xxx | xxx | xxx |
+
+### 关键决策（可选）
+- 决策点1
+- 决策点2
+
+### 产出文件（可选）
+- 文件1
+- 文件2
 ```
-用户需求 → Master检测 → ProjectExplorer探索 → Architect分配 → 任务拆解
-```
 
-### 触发条件
-- 存在 src/lib/drivers/app 等源代码目录
-- 存在构建文件（Makefile/CMakeLists.txt等）
-- 存在 .git 目录
+## 术语表
 
-### 约束
-- **禁止**跳过项目探索直接开始开发
-- **禁止**探索范围超出指定区域
-
----
-
-## 四、API 设计流程（详细见 docs/api-design.md）
-
-```
-Architect 拆解 → IntegrationEngineer 设计 → Architect 审查 → Coder 编码
-```
-
-### 约束
-- **禁止** Coder 在 API 契约未确认前开始编码
-- **禁止** 跳过 API 审查环节
-
----
-
-## 五、执行循环（详细见 docs/execution.md）
-
-```
-用户需求 → Master → 项目探索 → Architect拆解 → 用户确认 → 执行循环(最多3次)
-                                              ↓
-                         Reviewer评分(0.7) + Reflector复盘(0.3)
-                                              ↓
-                                    评分≥90? → [是]终止 [否]迭代
-```
-
-### 迭代规则
-- 迭代 1: 执行 → 评分 → 复盘
-- 迭代 2: 如评分<90，改进 → 重新评分
-- 迭代 3: 最后一次，仍不达标则终止
-
----
-
-## 六、评分机制（详细见 docs/scoring.md）
-
-### 维度与满分
-
-| 维度 | 满分 |
+| 术语 | 说明 |
 |------|------|
-| 正确性 | 25 |
-| 可读性 | 20 |
-| 完整性 | 20 |
-| 性能 | 15 |
-| 安全性 | 10 |
-| 规范性 | 10 |
+| Master | 主调度代理，负责协调整个工作流 |
+| Architect | 架构师代理，负责任务拆解和API审查 |
+| Coder | 编码代理，负责代码实现 |
+| Reviewer | 审查代理，负责质量评分（权重0.7） |
+| Reflector | 复盘代理，负责迭代决策（权重0.3） |
+| iteration | 迭代，一次完整的执行-评分循环 |
+| task_list | 任务列表，由Architect生成 |
+| context | 共享上下文，各Agent维护的状态信息 |
 
-### 计算公式
+## 版本规范
 
-```
-最终评分 = Reviewer得分 × 0.7 + Reflector得分 × 0.3
-```
+采用语义化版本`major.minor.patch`：
 
-### 终止条件
-- **通过**：最终评分 ≥ 90
-- **强制终止**：达到 3 次迭代
+| 版本类型 | 适用场景 |
+|----------|----------|
+| patch | Bug修复、文档更新 |
+| minor | 新增功能（向后兼容） |
+| major | 破坏性变更 |
 
----
+当前版本：1.0.0
 
-## 七、状态文件（详细见 docs/files.md）
+## 相关资源
 
-位置：`.agent_workflow/`
+### 参考文档
+- `docs/skill-writing-guide.md` - 优秀Skill写作指导
+- `docs/agent-build-assist.md` - Agent编写规范
+- `docs/multi-agent-workflow-framework.md` - Multi-Agent工作流框架
 
-| 文件 | 维护者 | 内容 | 维护规则 |
-|------|--------|------|----------|
-| meta.md | Master | 工作流状态、时间 | |
-| task_list.md | Architect | 任务列表 | |
-| execution_plan.md | Architect | 执行计划 | |
-| context.md | 各Agent | 共享上下文 | |
-| project_exploration.md | ProjectExplorer | 项目探索报告 | Master 检测变动并调度增量更新 |
-| scores.md | Reviewer | 评分记录 | |
-| iterations/iteration_N.md | Master | 迭代详情 | |
-| workflow_changelog.md | Master | 项目修改历史（只写不读） | |
-
----
-
-## 八、关键约束（详细见各详细文档）
-
-| 约束 | 说明 | 违反处理 |
-|------|------|----------|
-| 项目探索前置 | 已有项目必须先完成探索 | Master 叫停 |
-| 探索任务分配 | 大型项目分段探索，防止上下文溢出 | Architect 重新分配 |
-| API 设计前置 | 涉及 API/接口必须先完成设计 | Master 叫停 |
-| 执行者并行上限 | 同类执行者最多 3 个并行 | Master 调度调整 |
-| 迭代上限 | 3 次，强制终止 | 终止工作流 |
-| 评分权重 | Reviewer 70% + Reflector 30% | 按权重计算 |
-| 任务粒度 | 拆解到模块级 | Architect 重新拆解 |
-| 状态持久化 | 关键状态存入 .agent_workflow/ | Agent 补全 |
-| 路径规范 | Input/Output 必须使用正确路径格式；仓库内用相对路径，仓库外用绝对路径；禁止裸文件名 | Agent 自动修正并记录，Master 检查监督 |
-| 迭代详情输出 | 每次迭代结束后必须生成 iteration_N.md | Master 未生成则工作流异常，需补全后才能继续 |
-| changelog 只写不读 | workflow_changelog.md 禁止 Agent 读取 | Agent 读取会导致上下文溢出，Master 监督执行 |
-| 复用优先 | 已有 project_exploration.md 时必须先读取复用，禁止直接全量探索 | Master 监督，违者重新执行 |
-| 读取范围限制 | Agent 读取 project_exploration.md 时只读最新一条增量更新记录，禁止读完整变更日志 | Master 监督，违者重新执行 |
-| 更新评估 | Coder 等修改代码后，Master 必须评估是否需要更新报告 | Master 补评 |
-
----
-
-## 九、详细文档索引
-
-| 文档 | 内容 |
+### 工作流状态文件
+| 文件 | 用途 |
 |------|------|
-| `docs/agents.md` | Agent 角色详细说明、执行步骤、输出模板 |
-| `docs/tags.md` | 任务标签匹配规则、应用示例 |
-| `docs/exploration.md` | 项目探索流程、触发条件、报告格式 |
-| `docs/api-design.md` | API 设计流程、契约模板、审查要点 |
-| `docs/execution.md` | 执行循环详细步骤、主动求助流程 |
-| `docs/scoring.md` | 评分维度，加权计算，校准原则 |
-| `docs/files.md` | 状态文件格式模板，维护规则 |
+| `.agent_workflow/meta.md` | 工作流元数据 |
+| `.agent_workflow/context.md` | 共享上下文 |
+| `.agent_workflow/workflow_changelog.md` | 变更日志 |
+| `.agent_workflow/iterations/` | 迭代记录 |
+| `.agent_workflow/project_exploration.md` | 项目探索报告 |

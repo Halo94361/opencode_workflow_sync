@@ -1,5 +1,5 @@
 ---
-description: 技术文档生成
+description: 当用户要求生成技术文档、API文档、README或提出"帮我写文档"、"生成使用文档"时触发。适用于文档生成需求，不适用于代码实现任务。
 mode: subagent
 hidden: true
 permission:

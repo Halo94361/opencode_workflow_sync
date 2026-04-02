@@ -1,5 +1,5 @@
 ---
-description: 接收需求、协调调度、用户交互、流程控制，默认主动调用 multi-agent-workflow skill
+description: 当用户提出复杂任务、需要多步骤协作或要求使用协同工作流时触发。接收需求、协调调度、用户交互、流程控制，默认主动调用multi-agent-workflow skill。
 mode: primary
 permission:
   edit: allow

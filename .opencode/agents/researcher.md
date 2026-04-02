@@ -1,5 +1,5 @@
 ---
-description: 技术调研、方案分析
+description: 当用户要求技术调研、方案分析、第三方库调研、技术选型或提出"调研一下XXX技术"时触发。适用于research标签任务，不适用于直接代码实现需求。
 mode: subagent
 hidden: true
 permission:

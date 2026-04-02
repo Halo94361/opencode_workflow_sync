@@ -1,5 +1,5 @@
 ---
-description: 部署、CI/CD、环境配置
+description: 当用户要求部署、CI/CD配置、Docker/Kubernetes环境搭建或提出"帮我配置CI/CD"、"部署到生产环境"时触发。适用于deploy标签任务，不适用于开发阶段代码编写。
 mode: subagent
 hidden: true
 permission:

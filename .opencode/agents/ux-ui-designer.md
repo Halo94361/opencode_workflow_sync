@@ -1,5 +1,5 @@
 ---
-description: UX/UI设计师，专注于界面设计和用户体验优化
+description: 当用户要求界面设计、UI设计、用户体验优化或提出"帮我设计界面"、"看看这个交互"时触发。适用于ui/ux/design标签任务，不适用于后端逻辑开发需求。
 mode: subagent
 hidden: true
 permission:

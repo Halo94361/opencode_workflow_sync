@@ -1,5 +1,5 @@
 ---
-description: 性能工程师，专注于性能分析、瓶颈定位和优化建议
+description: 当用户要求性能分析、瓶颈定位、性能优化或提出"帮我分析性能问题"、"看看哪里有性能瓶颈"时触发。适用于performance标签任务，不适用于功能正确性验证。
 mode: subagent
 hidden: true
 permission:

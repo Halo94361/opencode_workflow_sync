@@ -1,5 +1,5 @@
 ---
-description: 安全相关任务
+description: 当用户要求安全审计、漏洞检测、安全加固或提出"帮我检查安全问题"、"看看有没有安全漏洞"时触发。适用于security标签任务，不适用于功能开发需求。
 mode: subagent
 hidden: true
 permission:

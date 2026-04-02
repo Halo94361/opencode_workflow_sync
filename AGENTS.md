@@ -1,5 +1,15 @@
 # OpenCode Agent & Skill 机制
 
+## 参考文档
+
+| 文档 | 路径 | 说明 |
+|------|------|------|
+| **优秀Skill写作指导** | `docs/skill-writing-guide.md` | Skill编写规范和最佳实践 |
+| **Agent编写规范** | `docs/agent-build-assist.md` | Agent文件详细编写指南 |
+| **Multi-Agent工作流框架** | `docs/multi-agent-workflow-framework.md` | 协同工作流完整规范 |
+
+---
+
 ## Agent 类型
 
 | 类型 | 说明 |
@@ -35,12 +45,28 @@
 ```markdown
 ---
 name: skill-name
-description: 技能描述（1-1024字符）
+description: 当用户要求[动作]或提出[关键词]时触发。适用于[场景]，不适用于[排除场景]。
+allowed-tools:
+  - read
+  - write
+version: 1.0.0
 ---
 
-## 技能内容
-...
+## 技能名称
+
+### 概述
+简要说明技能用途和边界
+
+### 执行流程
+1. 步骤一
+2. 步骤二
+
+### Gotchas
+- ⚠️ 踩坑点一
+- ⚠️ 踩坑点二
 ```
+
+> **注意**：description 是**触发条件描述**，不是功能简介。详见 [优秀Skill写作指导](docs/skill-writing-guide.md)。
 
 ### 命名规则
 
@@ -68,7 +94,7 @@ tools:
 你是一个代码审查专家，专注于安全、性能和可维护性。
 ```
 
-详细编写规范请参考 [AGENT_build_assist.md](AGENT_build_assist.md)
+详细编写规范请参考 [Agent编写规范](docs/agent-build-assist.md)
 
 ### 核心配置项
 
@@ -101,4 +127,4 @@ tools:
 | Reflector | subagent | true |
 | 工作流规则 | Skill | - |
 
-详见 [.opencode/skills/multi-agent-workflow/SKILL.md](.opencode/skills/multi-agent-workflow/SKILL.md)
+详见 [Multi-Agent工作流框架](docs/multi-agent-workflow-framework.md)

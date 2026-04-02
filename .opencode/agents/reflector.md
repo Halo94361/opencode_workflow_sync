@@ -1,5 +1,5 @@
 ---
-description: 复盘分析、流程改进建议
+description: 当迭代执行完成后需要复盘分析、流程改进建议或Reviewer评分后需要辅助评估时触发。适用于执行循环结束后的复盘阶段，不适用于任务执行过程中。
 mode: subagent
 hidden: true
 permission:

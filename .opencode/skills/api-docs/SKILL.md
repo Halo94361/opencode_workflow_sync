@@ -1,44 +1,31 @@
 ---
 name: api-docs
-description: 根据API接口（头文件/函数签名）生成Markdown格式的API参考文档和使用示例代码
+description: 当用户提供头文件、函数签名、接口定义并要求生成API文档、"帮我写文档"或"生成使用示例"时触发。适用于C嵌入式驱动/API参考文档生成，不适用于Word/PDF格式需求。
+allowed-tools:
+  - read
+  - write
+version: 1.0.0
 ---
 
-## What I do
-- 分析头文件中的函数声明
-- 提取参数说明、返回值、错误码
-- 生成 Markdown / Doxygen 格式文档
-- 创建使用示例代码
+## 概述
 
-## When to use me
-Use this skill when you need to:
-- 为新 API 生成文档
-- 更新现有 API 文档
-- 创建使用示例
-- 生成对外交付文档
+分析头文件中的函数声明。提取参数说明、返回值、错误码。生成Markdown/Doxygen格式文档。创建使用示例代码。
 
-## Workflow
+## 前置要求
 
-### Phase 1: 代码分析
-1. 扫描目标头文件
-2. 提取信息：
-   - 函数声明和签名
-   - 参数类型和含义
-   - 返回值和错误码
-   - 数据结构定义
+- 输入：头文件（.h）或接口定义文件
+- 背景：了解模块的功能和用途
+- 输出：目标文档目录（可选）
 
-### Phase 2: 文档生成
-1. 生成文档内容：
-   - API 概览
-   - 函数详细说明
-   - 错误码表
-   - 使用示例
+## 执行流程
 
-### Phase 3: 文档输出
-1. 生成 Markdown 格式文档
-2. 可选：生成 Doxygen 注释
-3. 保存到指定目录
+| 步骤 | 名称 | 输入 | 输出 | 说明 |
+|------|------|------|------|------|
+| 1 | 代码分析 | 头文件(.h) | 函数列表、参数表 | 扫描目标头文件，提取函数签名、参数类型、返回值、错误码、数据结构 |
+| 2 | 文档生成 | 函数列表、参数表 | 文档初稿 | 生成API概览、函数详细说明、错误码表、使用示例 |
+| 3 | 文档输出 | 文档初稿 | 最终文档 | 生成Markdown/Doxygen格式，保存到目标目录 |
 
-## Output Format
+## 输出格式
 
 ```markdown
 # API Documentation: [module_name]
@@ -75,7 +62,6 @@ if (ret != 0) {
 ```
 
 ## Error Codes
-
 | Code | Name | Description |
 |------|------|-------------|
 | 0 | SUCCESS | 操作成功 |
@@ -84,17 +70,42 @@ if (ret != 0) {
 | -3 | ERR_TIMEOUT | 超时 |
 ```
 
-## Documentation Styles
-根据需求选择格式：
-- **Markdown**: 用于内部文档、GitHub README
-- **Doxygen**: 用于生成 HTML/PDF 文档
-- **简报**: 用于快速参考卡
+## Gotchas
 
-## Example Usage
-User: "帮我生成 your_project/core_driver 的 API 文档"
+- ⚠️ **函数签名准确性**：确保函数签名与实际代码完全一致，注意const、指针、数组等修饰符
+- ⚠️ **错误码完整性**：错误码定义应与代码实现一致，检查所有返回错误码的分支
+- ⚠️ **示例可用性**：示例代码应可直接编译运行，包含完整的错误处理
+- ⚠️ **参数说明**：每个参数都要说明其用途、是否可NULL、输入/输出属性
+- ⚠️ **嵌入式API特殊性**：驱动API需说明硬件要求（时钟、电源、中断）、阻塞/非阻塞特性
+- ⚠️ **线程安全**：如有线程安全要求，必须明确说明
+- ⚠️ **Doxygen注释规范**：使用@param、@return、@brief等标准标签，便于生成HTML/PDF文档
 
-Agent actions:
-1. Load skill: `skill({ name: "api-docs" })`
-2. 分析 xxx_project_api.h 内容
-3. 生成 API 文档
-4. 输出到 doc/ 目录
+## 术语表
+
+| 术语 | 说明 |
+|------|------|
+| handle | 设备句柄，用于标识和访问设备实例 |
+| config | 配置结构体，包含设备初始化参数 |
+| 阻塞/非阻塞 | API执行方式，阻塞会等待操作完成才返回 |
+| Doxygen | C/C++文档生成工具，支持@标签语法 |
+
+## 版本规范
+
+采用语义化版本`major.minor.patch`：
+
+| 版本类型 | 适用场景 |
+|----------|----------|
+| patch | Bug修复、文档更新 |
+| minor | 新增功能（向后兼容） |
+| major | 破坏性变更 |
+
+当前版本：1.0.0
+
+## 相关资源
+
+### 参考文档
+- `docs/skill-writing-guide.md` - 优秀Skill写作指导
+- `docs/agent-build-assist.md` - Agent编写规范
+
+### 相关Skill
+- `multi-agent-workflow` - 协同工作流框架

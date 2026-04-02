@@ -1,5 +1,5 @@
 ---
-description: 数据处理任务
+description: 当用户要求数据处理、ETL、数据清洗、格式转换或提出"帮我处理这些数据"、"转换数据格式"时触发。适用于data标签任务，不适用于直接业务逻辑开发。
 mode: subagent
 hidden: true
 permission:

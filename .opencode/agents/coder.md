@@ -1,5 +1,5 @@
 ---
-description: 代码实现，支持Python/C/嵌入式/多语言开发
+description: 当用户要求代码实现、功能开发、模块编码或被Master分配执行default标签任务时触发。适用于coder标签任务，不适用于调研和文档需求。
 mode: subagent
 hidden: true
 permission:

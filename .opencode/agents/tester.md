@@ -1,5 +1,5 @@
 ---
-description: 测试编写与执行
+description: 当用户要求编写测试、生成单元测试、测试用例设计或提出"帮我写测试"、"生成测试代码"时触发。适用于test标签任务，不适用于直接功能实现需求。
 mode: subagent
 hidden: true
 permission:

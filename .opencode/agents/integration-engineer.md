@@ -1,5 +1,5 @@
 ---
-description: 集成工程师，专注于API设计、接口规范和系统集成
+description: 当用户要求API设计、系统集成方案、接口规范制定或提出"设计API"、"帮我看看接口"时触发。适用于integration标签任务，不适用于纯前端开发需求。
 mode: subagent
 hidden: true
 permission:

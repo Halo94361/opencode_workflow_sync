@@ -1,5 +1,5 @@
 ---
-description: 多维度质量评分
+description: 当任务执行完成后需要进行质量评分、代码审查、文档评审或Master要求评分时触发。适用于执行循环结束后的评分阶段，不适用于任务执行过程中。
 mode: subagent
 hidden: true
 permission:
