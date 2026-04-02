@@ -1,6 +1,6 @@
 ---
 name: bug-diagnosis
-description: 分析错误日志、定位问题根源、提供修复建议
+description: 解析错误日志（编译错误/运行时崩溃/通信超时等），定位问题根因并提供具体的修复方案和预防措施
 ---
 
 ## What I do

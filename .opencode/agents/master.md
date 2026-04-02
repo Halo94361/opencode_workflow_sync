@@ -1,10 +1,11 @@
 ---
-description: 接收需求、协调调度、用户交互、流程控制
+description: 接收需求、协调调度、用户交互、流程控制，默认主动调用 multi-agent-workflow skill
 mode: primary
 permission:
   edit: allow
   bash: allow
   webfetch: allow
+default_skill: multi-agent-workflow
 ---
 
 # Master Agent

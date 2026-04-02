@@ -1,6 +1,6 @@
 ---
 name: test-generator
-description: 根据 API 接口自动生成测试代码
+description: 分析API接口和函数签名，自动生成单元测试和集成测试代码，覆盖正常流程、边界条件和异常处理
 ---
 
 ## What I do

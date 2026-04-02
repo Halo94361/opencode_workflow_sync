@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: 分析代码质量、发现潜在问题、提供改进建议
+description: 对源代码进行系统性审查，评估代码质量、可维护性、安全性和性能，输出改进建议和最佳实践建议
 ---
 
 ## What I do

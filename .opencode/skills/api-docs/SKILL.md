@@ -1,6 +1,6 @@
 ---
 name: api-docs
-description: 从代码生成 API 文档和使用示例
+description: 根据API接口（头文件/函数签名）生成Markdown格式的API参考文档和使用示例代码
 ---
 
 ## What I do

@@ -1,6 +1,6 @@
 ---
 name: cross-platform-check
-description: 检查 MCU/Linux/core_driver 跨平台代码兼容性
+description: 检测代码中的平台特定代码（Windows/Linux/嵌入式MCU），验证跨平台兼容性并检查是否符合平台约束规范
 ---
 
 ## What I do
