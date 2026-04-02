@@ -4,7 +4,9 @@
 
 ## 安装说明
 
-此工具为 OpenCode Skill 格式，直接放置于 skill_ref/custom-tools/math-toolkit/ 目录下即可使用。
+> **重要**: 此目录为 **参考案例**，不是实际安装位置。
+>
+> 实际使用时，需将 `math.ts` 和 `package.json` 复制到项目的 `.opencode/tools/` 目录下。
 
 ## 操作列表
 
@@ -238,7 +240,7 @@ const expVal = math_exp(2);  // 返回约 7.389056
 
 ```javascript
 // 计算 sin(PI/2)
-const sinVal = math_sin(math_divide(math_pi(), 2));  // 返回 1
+const sinVal = math_sin(Math.PI / 2);  // 返回 1
 
 // 计算 cos(60度)
 const cosVal = math_cos(math_deg2rad(60));  // 返回 0.5
@@ -289,7 +291,7 @@ const minVal = math_min([1, 5, 3, 9, 2]);  // 返回 1
 const rad = math_deg2rad(180);  // 返回 PI (约 3.141593)
 
 // 弧度转度
-const deg = math_rad2deg(math_pi());  // 返回 180
+const deg = math_rad2deg(Math.PI);  // 返回 180
 ```
 
 ## 注意事项
