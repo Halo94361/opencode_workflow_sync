@@ -1,70 +1,54 @@
 # 迭代记录: Iteration 1
 
 ## 基本信息
-- **任务**: 获取优秀Skill案例
+- **任务**: 调研 tools 和 tools_gen_skill
 - **迭代时间**: 2026-04-02
-- **状态**: TERMINATED (用户终止)
+- **状态**: TERMINATED
 
 ## 执行摘要
 
-### 完成的工作
-1. **Researcher**: 从 Anthropic 官方仓库获取了 7 个优秀 Skill 案例
-   - docx (Word文档处理)
-   - mcp-builder (MCP服务器开发)
-   - skill-creator (Skill创建指南)
-   - webapp-testing (Web应用测试)
-   - brand-guidelines (品牌视觉规范)
-   - claude-api (Claude API使用指南)
-   - template (基础模板)
+### 迭代1 - 初步调研
+**Reviewer**: 58分 | **Reflector**: 52分 | **综合**: 56.2分
 
-2. **Coder**: 建立了完整的 skill_ref 目录结构
-   - 16 个文件创建完成
-   - 目录结构：official/、community/、catalog.md
+**问题**：
+- 调研报告内容简略，仅有摘要性描述
+- tools 机制仅列举工具名称未说明用法
+- tools_gen_skill 不存在的结论缺乏官方依据
 
-### 评审结果
-| 维度 | 得分 |
-|------|------|
-| 完整性 | 22/30 |
-| 规范性 | 28/30 |
-| 实用性 | 18/25 |
-| 文档质量 | 13/15 |
-| **总分** | **81/100** |
+### 迭代2 - 深入调研
+**Reviewer**: 73分 | **Reflector**: 58分 | **综合**: 68.5分
 
-### Reflector 复盘
-- **评分**: 76分
-- **主要问题**:
-  - 社区资源仅提供链接，未实际收录内容
-  - template 案例过于简单（仅7行）
-  - 类型覆盖不足（缺少数据分析、图像处理等场景）
-- **根因**: 调研范围局限 + 执行不彻底
+**完成内容**：
+1. **内置 Tools 详细用法**：14个内置工具（bash, edit, write, read, grep, glob, list, lsp, apply_patch, skill, todowrite, webfetch, websearch, question），每个包含功能、参数、场景、权限
+2. **Custom Tools 创建指南**：完整代码示例（TypeScript + Python）
+3. **tools_gen_skill 不存在**：官方文档依据确认
+4. **skill-creator SKILL.md**：完整内容可参考
 
-### 综合评分
-`81 × 0.7 + 76 × 0.3 = 79.5分`
+## 评审结果
+
+| 维度 | 迭代1 | 迭代2 |
+|------|-------|-------|
+| 完整性 | 18/30 | 21/30 |
+| 准确性 | 16/30 | 24/30 |
+| 实用性 | 14/25 | 18/25 |
+| 文档质量 | 10/15 | 10/15 |
+| **总分** | **58** | **73** |
 
 ## 终止原因
-**用户主动终止** - 满意当前成果，不需要继续迭代
+**Reflector 建议终止**：调研内容已完整，缺陷在于复盘流程未执行（iterations 文档缺失），继续迭代无法改善已完成的调研内容。
 
-## 产出文件
-| 文件 | 状态 |
-|------|------|
-| skill_ref/catalog.md | ✅ |
-| skill_ref/official/docx/SKILL.md | ✅ |
-| skill_ref/official/docx/README.md | ✅ |
-| skill_ref/official/mcp-builder/SKILL.md | ✅ |
-| skill_ref/official/mcp-builder/README.md | ✅ |
-| skill_ref/official/skill-creator/SKILL.md | ✅ |
-| skill_ref/official/skill-creator/README.md | ✅ |
-| skill_ref/official/webapp-testing/SKILL.md | ✅ |
-| skill_ref/official/webapp-testing/README.md | ✅ |
-| skill_ref/official/brand-guidelines/SKILL.md | ✅ |
-| skill_ref/official/brand-guidelines/README.md | ✅ |
-| skill_ref/official/claude-api/SKILL.md | ✅ |
-| skill_ref/official/claude-api/README.md | ✅ |
-| skill_ref/official/template/SKILL.md | ✅ |
-| skill_ref/official/template/README.md | ✅ |
-| skill_ref/community/catalog.md | ✅ |
+## 调研结论
 
-## 改进建议（未执行）
-- P0: 从社区高星仓库实际获取 2-3 个 Skill 内容
-- P1: 扩展 template/SKILL.md 为标准模板
-- P1: 补充数据分析、图像处理类社区 Skill
+### 1. OpenCode Tools 机制
+OpenCode 提供 14 个内置工具，支持文件操作、命令执行、Web 获取、Skill 加载等。
+
+### 2. tools_gen_skill 不存在
+- 官方文档无此工具
+- anthropics/skills 仓库的 skill-creator 是 Claude 生态，非 OpenCode 内置
+
+### 3. Custom Tools 创建
+使用 `@opencode-ai/plugin` 包，参考 `.opencode/tools/` 目录结构
+
+## 改进项（未执行）
+- 建立迭代记录规范，创建 `iterations/iteration_N.md`
+- 调研结束后输出结构化调研报告
