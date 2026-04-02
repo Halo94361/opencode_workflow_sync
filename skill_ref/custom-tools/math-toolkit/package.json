@@ -1,0 +1,17 @@
+{
+  "name": "math-toolkit",
+  "version": "1.0.0",
+  "description": "Mathematical operations toolkit for OpenCode",
+  "main": "math.js",
+  "types": "math.d.ts",
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  }
+}
