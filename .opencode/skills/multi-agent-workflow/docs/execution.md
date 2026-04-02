@@ -361,11 +361,19 @@ main.py → utils.py → config.py
 
 | 迭代 | 动作 |
 |------|------|
-| 1 | 执行者完成任务 → Reviewer评分 → Reflector复盘 |
-| 2 | 如评分<90，根据建议改进 → 重新评分 |
-| 3 | 最后一次尝试机会，仍不达标则终止 |
+| 1 | 执行者完成任务 → Reviewer评分 → Reflector复盘 → **Master写入iteration_1.md** |
+| 2 | 如评分<90，根据建议改进 → 重新评分 → **Master写入iteration_2.md** |
+| 3 | 最后一次尝试机会，仍不达标则终止 → **Master写入iteration_3.md** |
 
-### 7.2 迭代判断
+### 7.2 迭代文件写入节点
+
+Master 在以下节点**必须**写入 `iterations/iteration_N.md`：
+1. 迭代执行完成（Reviewer评分 + Reflector复盘后）
+2. 决定是否继续迭代之前
+
+写入内容应包含：基本信息、任务执行情况、评分、改进建议、迭代结论。
+
+### 7.3 迭代判断
 
 ```markdown
 ## 迭代判断
