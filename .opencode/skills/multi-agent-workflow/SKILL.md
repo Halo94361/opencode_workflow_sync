@@ -19,7 +19,7 @@ version: 1.0.0
 | 步骤 | 名称 | 输入 | 输出 | 说明 |
 |------|------|------|------|------|
 | 1 | 接收需求 | 用户需求描述 | 触发判断 | Master判断是否触发协同工作流 |
-| 2 | 项目探索 | 项目根目录 | `project_exploration.md` | 自动检测已有项目，复用已有报告 |
+| 2 | 项目探索 | 项目根目录 | `project_exploration.md` | 自动检测已有项目，复用已有报告，Master调用Project-explorer执行 |
 | 3 | 任务拆解 | 用户需求、project_exploration | `task_list.md` | Architect分析并生成任务列表 |
 | 4 | 用户确认 | task_list.md | 用户批准/修改/取消 | 展示任务拆解，等待用户确认 |
 | 5 | 执行循环 | task_list、用户确认 | 迭代记录、最终产出 | 最多3次迭代 |
@@ -135,6 +135,7 @@ version: 1.0.0
 |------|------|
 | Master | 主调度代理，负责协调整个工作流 |
 | Architect | 架构师代理，负责任务拆解和API审查 |
+| Project-explorer | 项目探索者，负责项目文件夹的结构和内容探索 |
 | Coder | 编码代理，负责代码实现 |
 | Reviewer | 审查代理，负责质量评分（权重0.7） |
 | Reflector | 复盘代理，负责迭代决策（权重0.3） |
