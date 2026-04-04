@@ -19,19 +19,27 @@ version: 1.0.0
 | 步骤 | 名称 | 输入 | 输出 | 说明 |
 |------|------|------|------|------|
 | 1 | 接收需求 | 用户需求描述 | 触发判断 | Master判断是否触发协同工作流 |
-| 2 | 项目探索 | 项目根目录 | `project_exploration.md` | 自动检测已有项目，复用已有报告，Master调用Project-explorer执行 |
-| 3 | 任务拆解 | 用户需求、project_exploration | `task_list.md` | Architect分析并生成任务列表 |
+| 2 | 项目探索 | 项目根目录 | `.agent_workflow/project_exploration.md` | 自动检测已有项目，复用已有报告 |
+| 3 | 任务拆解 | 用户需求、project_exploration | `.agent_workflow/task_list.md` | Architect分析并生成任务列表 |
 | 4 | 用户确认 | task_list.md | 用户批准/修改/取消 | 展示任务拆解，等待用户确认 |
 | 5 | 执行循环 | task_list、用户确认 | 迭代记录、最终产出 | 最多3次迭代 |
 | 6 | 结果汇总 | 所有迭代记录 | 执行报告 | 向用户汇报最终结果 |
 
 ### 执行循环详细说明
 
-1. 调度执行者（Researcher/Coder/Tester等）执行任务
-2. Reviewer评分（权重0.7）+ Reflector复盘（权重0.3）
+1. 调度执行者执行任务（按architect.md中的任务标签映射表分配）
+2. Reviewer评分（权重0.7，评估代码质量）→ Reflector评分（权重0.3，评估流程质量）（串行执行）
 3. **评分计算**：`最终评分 = Reviewer得分 × 0.7 + Reflector得分 × 0.3`
 4. 评分≥90终止，否则继续迭代
 5. **无进展检测**：连续2次迭代评分变化<2分时，触发无进展警告，需向用户求助
+
+### 异常处理
+
+| 异常场景 | 处理方式 |
+|----------|----------|
+| 执行者任务失败 | Master记录失败原因，继续执行其他并行任务，本轮迭代结束后评估是否重试 |
+| 所有执行者任务失败 | 直接终止迭代，向用户报告 |
+| 用户确认超时（>30分钟） | Master发送提醒，超过60分钟则暂停工作流 |
 
 ## 输出格式
 
@@ -49,7 +57,7 @@ version: 1.0.0
 - ⚠️ **并行任务上限**：同类任务（相同职责Agent）最多3个并行，Master负责调度防止溢出
 - ⚠️ **评分阈值**：连续2次迭代评分变化<2分时，触发无进展警告，需向用户求助
 - ⚠️ **API设计前置**：涉及API/接口时，必须先完成API契约设计，Coder禁止提前编码
-- ⚠️ **项目探索复用**：已有`project_exploration.md`时必须先读取复用，禁止直接全量探索
+- ⚠️ **项目探索复用**：已有`.agent_workflow/project_exploration.md`时必须先读取复用，禁止直接全量探索
 - ⚠️ **changelog由Master写入**：workflow_changelog.md仅Master可写入，Agent通过Master提取关键信息
 - ⚠️ **路径规范**：使用`{baseDir}`引用路径，禁止硬编码绝对路径
 
@@ -60,9 +68,9 @@ version: 1.0.0
 | 文件 | 维护者 | 更新时机 | 禁止行为 |
 |------|--------|----------|----------|
 | `.agent_workflow/meta.md` | Master | 每次迭代开始/结束 | 禁止跳过状态更新 |
-| `.agent_workflow/context.md` | 各Agent | 每次任务交接/状态变更 | 禁止遗留过期上下文 |
+| `.agent_workflow/context.md` | 各Agent | 每次任务交接/状态变更 | 各Agent仅追加自身状态，禁止修改其他Agent内容 |
 | `.agent_workflow/workflow_changelog.md` | Master | 每次工作流行为后 | 仅Master写入，Agent通过Master提取 |
-| `.agent_workflow/iterations/iteration_N.md` | Master | 每次迭代结束后 | 禁止事后补写 |
+| `.agent_workflow/iterations/iteration_N.md` | Master统筹 | 每次迭代结束后 | Master写入执行记录，Reviewer写入评分区域，Reflector写入复盘区域，各区域互不覆盖 |
 
 **验证机制**：
 - Master在任务交接前必须验证状态文件一致性
@@ -71,6 +79,14 @@ version: 1.0.0
 
 **违反处理**：若文档未实时更新，工作流状态将不一致，后续Agent可能基于过期信息决策，导致任务失败。此时必须回溯并补全文档后才能继续。
 
+### context.md 大小控制
+
+**⚠️ 避免context.md无限膨胀**
+
+- 每次迭代开始时，Master清理上一次迭代的临时数据
+- 仅保留：当前任务状态、最近2次迭代的关键决策、共享数据
+- 超过500行时，Master必须归档旧内容并创建新文件
+
 ### 迭代记录归档规则
 
 **⚠️ 新任务启动时：必须归档旧迭代记录，禁止直接清空**
@@ -78,10 +94,11 @@ version: 1.0.0
 - 执行时机：用户确认启动新任务后、第一次迭代开始前
 - 执行者：Master
 - 归档操作：
-  1. 将`.agent_workflow/iterations/`目录重命名为`iterations_archive/`
+  1. 确保`.agent_workflow/iterations_archive/`目录存在
   2. 在`iterations_archive/`下创建时间戳子目录：`YYYYMMDD_HHmmss_old_task_name/`
-  3. 将旧迭代记录移动到归档目录
-- 追溯方式：通过`workflow_changelog.md`中的任务ID关联归档目录
+  3. 将`.agent_workflow/iterations/`下的所有文件移动到该子目录
+  4. 清空`.agent_workflow/iterations/`目录
+- 追溯方式：通过`.agent_workflow/workflow_changelog.md`中的任务ID关联归档目录
 - **禁止**：直接删除旧记录或覆盖
 
 ### workflow_changelog.md增量更新规则

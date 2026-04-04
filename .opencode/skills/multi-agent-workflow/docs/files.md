@@ -54,6 +54,18 @@
 | Current Iteration | 当前迭代次数 | 1, 2, 3 |
 | Termination Score | 终止阈值 | 90 |
 
+### 2.3 状态转换规则
+
+| 当前状态 | 触发条件 | 下一状态 |
+|----------|----------|----------|
+| INIT | Master完成初始化 | EXPLORING |
+| EXPLORING | ProjectExplorer完成探索 | PLANNING |
+| PLANNING | Architect完成任务拆解 | WAITING_CONFIRM |
+| WAITING_CONFIRM | 用户确认计划 | EXECUTING |
+| EXECUTING | 所有执行者完成任务 | REVIEWING |
+| REVIEWING | Reviewer+Reflector完成评分且评分<90且迭代<3 | EXECUTING |
+| REVIEWING | Reviewer+Reflector完成评分且评分≥90或迭代=3 | TERMINATED |
+
 ---
 
 ## 三、task_list.md 格式
@@ -230,27 +242,41 @@
 ```markdown
 # Iteration N
 
-## 基本信息
+## 基本信息（Master写入）
 - 开始时间: <时间>
 - 结束时间: <时间>
 - 持续时间: <时长>
 
-## 任务执行
+## 任务执行（Master写入）
 | 任务 | 执行者 | 状态 | 耗时 | 输出 |
 |------|--------|------|------|------|
 | T1 | Coder | completed | 120s | file.py |
 | T2 | Tester | failed | 60s | - |
 
-## 评分
-- Reviewer: XX/100
-- Reflector: XX/100
-- 最终: XX/100
+## 评分区域（Reviewer写入，禁止其他Agent修改）
+- 正确性: X/25 [扣分理由]
+- 可读性: X/20 [扣分理由]
+- 完整性: X/20 [扣分理由]
+- 性能: X/15 [扣分理由]
+- 安全性: X/10 [扣分理由]
+- 规范性: X/10 [扣分理由]
+- **Reviewer总分: XX/100**
+- 改进建议:
+  1. <建议1>
+  2. <建议2>
 
-## 改进建议
-1. <建议1>
-2. <建议2>
+## 复盘区域（Reflector写入，禁止其他Agent修改）
+- 流程效率: X/100 [说明]
+- 协作质量: X/100 [说明]
+- 问题预防: X/100 [说明]
+- 经验沉淀: X/100 [说明]
+- **Reflector总分: XX/100**
+- 改进建议:
+  1. <建议1> (优先级：高/中/低)
+  2. <建议2>
 
-## 迭代结论
+## 迭代结论（Master写入）
+- 最终得分: XX/100（Reviewer得分×0.7 + Reflector得分×0.3）
 - 通过/未通过
 - 是否继续迭代
 ```

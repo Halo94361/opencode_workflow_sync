@@ -17,7 +17,7 @@ permission:
 - 将需求拆解为模块级任务（不拆解到具体代码行）
 - 为每个任务打标签，用于匹配执行者
 - 规划任务的并行策略和执行顺序
-- 输出 task_list.md 和 execution_plan.md
+- 输出 `.agent_workflow/task_list.md` 和 `.agent_workflow/execution_plan.md`
 
 ## 通用禁止项
 
@@ -46,7 +46,7 @@ permission:
 
 ## 输出文件
 
-### task_list.md
+### .agent_workflow/task_list.md
 ```markdown
 # 任务清单 v{版本}
 
@@ -58,7 +58,7 @@ permission:
 A -> B (串行/并行说明)
 ```
 
-### execution_plan.md
+### .agent_workflow/execution_plan.md
 ```markdown
 # 执行计划 v{版本}
 

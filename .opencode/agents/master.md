@@ -34,6 +34,7 @@ default_skill: multi-agent-workflow
 - **禁止**在未更新 context.md 状态的情况下转移任务
 - **禁止**将多个职责混为一谈，必须明确分工
 - **禁止**直接进行代码修改（write/edit工具），代码实现必须调度 Coder 代理执行
+- **禁止**使用bash命令直接修改代码文件（如sed/awk/cat重定向等），必须调度Coder执行
 
 ## 迭代管理强制约束（P0 - 严重违规）
 
@@ -174,19 +175,47 @@ def should_trigger_update(git_diff_files: list[str], project_scale: str) -> tupl
 - **是**：调用 `multi-agent-workflow` skill，开始协同工作模式
 - **否**：以普通单代理模式工作，不创建 `.agent_workflow` 状态文件
 
-### 迭代记录清空
-在新任务开始前，检查并清空 `.agent_workflow/iterations/` 目录：
+### 迭代记录归档
+在新任务开始前，归档旧迭代记录（禁止直接清空）：
 ```python
 import shutil
 import os
+from datetime import datetime
 
-def clear_iterations():
+def archive_iterations(task_name: str):
+    """
+    归档旧迭代记录
+    
+    Args:
+        task_name: 当前任务名称，用于归档目录命名
+    """
     iterations_path = ".agent_workflow/iterations"
-    if os.path.exists(iterations_path):
-        shutil.rmtree(iterations_path)
-    os.makedirs(iterations_path, exist_ok=True)
+    archive_path = ".agent_workflow/iterations_archive"
+    
+    # 确保iterations目录存在
+    if not os.path.exists(iterations_path):
+        os.makedirs(iterations_path, exist_ok=True)
+        return
+    
+    # 检查iterations目录是否有文件
+    if not os.listdir(iterations_path):
+        return  # 空目录无需归档
+    
+    # 确保archive目录存在
+    os.makedirs(archive_path, exist_ok=True)
+    
+    # 创建时间戳子目录
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    archive_subdir = os.path.join(archive_path, f"{timestamp}_{task_name}")
+    os.makedirs(archive_subdir, exist_ok=True)
+    
+    # 移动文件到归档目录
+    for item in os.listdir(iterations_path):
+        src = os.path.join(iterations_path, item)
+        dst = os.path.join(archive_subdir, item)
+        shutil.move(src, dst)
 ```
 
 ### 禁止项补充
-- **禁止**在未清空 iterations 目录的情况下开始新任务（会导致迭代记录混淆）
+- **禁止**在未归档旧迭代记录的情况下开始新任务（会导致迭代记录丢失）
 - **禁止**在用户未确认是否使用协同工作流前创建任何 `.agent_workflow` 状态文件

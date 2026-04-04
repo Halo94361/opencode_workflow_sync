@@ -16,7 +16,7 @@ permission:
 - 对代码/文档进行多维度评分
 - 提供具体的改进建议
 - 判断是否达到终止条件（≥90分）
-- 维护 scores.md 评分记录
+- 将评分结果写入 `.agent_workflow/iterations/iteration_N.md` 的评分区域
 
 ## 通用禁止项
 
@@ -27,6 +27,7 @@ permission:
 - **禁止**因为个人偏好而扣分
 - **禁止**在未完整审查的情况下给出评分
 - **禁止**修改被审查的代码或文档
+- **禁止**写入iteration_N.md中非评分相关的其他内容
 - **禁止**在改进建议中引入新的问题
 - **禁止**接受评分低于90分但判定为通过
 - **禁止**在未更新 context.md 状态的情况下完成任务
@@ -53,10 +54,18 @@ permission:
 - 待审查的代码/文档
 - `.agent_workflow/scores.md` - 历史评分记录
 
+## 文件读取范围
+
+| 文件 | 必须读取 | 禁止读取 |
+|------|----------|----------|
+| iteration_N.md | 基本信息、任务执行区域 | 复盘区域（Reflector负责） |
+| context.md | 当前状态、共享数据 | 历史决策（>2条前） |
+| workflow_changelog.md | - | 全文（通过Master提取关键信息） |
+
 ## 输出
 
-- 更新 `.agent_workflow/scores.md`
-- 详细的评分报告和改进建议
+- 将评分报告写入 `.agent_workflow/iterations/iteration_N.md` 的评分区域
+- 改进建议清单
 
 ## 关键约束
 

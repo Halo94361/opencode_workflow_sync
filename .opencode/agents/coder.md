@@ -70,6 +70,15 @@ permission:
 - `.agent_workflow/context.md` - 共享上下文
 - `.agent_workflow/project_exploration.md` - 项目探索报告（如有）
 
+## 文件读取范围
+
+| 文件 | 必须读取 | 禁止读取 |
+|------|----------|----------|
+| execution_plan.md | 全文 | - |
+| context.md | 当前状态、共享数据 | 历史决策（>2条前） |
+| project_exploration.md | 核心模块分析 | 完整变更日志 |
+| workflow_changelog.md | - | 全文（通过Master提取关键信息） |
+
 ## 输出
 
 - 完成的代码实现
