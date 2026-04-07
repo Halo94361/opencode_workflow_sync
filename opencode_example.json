@@ -1,0 +1,245 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "minimax/m2.7",
+  "agent": {
+    "master": {
+      "description": "当用户提出复杂任务、需要多步骤协作或要求使用协同工作流时触发。接收需求、协调调度、用户交互、流程控制，默认主动调用multi-agent-workflow skill。",
+      "mode": "primary",
+      "model": "minimax/m2.7",
+      "temperature": 0.1,
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow"
+      },
+      "prompt": "{file:./.opencode/prompts/master.txt}"
+    },
+    "architect": {
+      "description": "当Master接收需求后需要进行任务拆解、标签标注、专业匹配、并行规划时触发。不直接与用户交互，由Master调度。",
+      "mode": "primary",
+      "model": "mimo/mimo-pro",
+      "temperature": 0.2,
+      "permission": {
+        "edit": "deny",
+        "bash": "deny",
+        "webfetch": "allow"
+      },
+      "prompt": "{file:./.opencode/prompts/architect.txt}"
+    },
+    "coder": {
+      "description": "当用户要求代码实现、功能开发、模块编码或被Master分配执行default标签任务时触发。适用于coder标签任务，不适用于调研和文档需求。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "mimo/mimo-omni",
+      "temperature": 0.3,
+      "permission": {
+        "edit": "allow",
+        "bash": "allow"
+      },
+      "prompt": "{file:./.opencode/prompts/coder.txt}"
+    },
+    "reviewer": {
+      "description": "当任务执行完成后需要进行质量评分、代码审查、文档评审或Master要求评分时触发。适用于执行循环结束后的评分阶段，不适用于任务执行过程中。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "mimo/mimo-pro",
+      "temperature": 0.1,
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      },
+      "prompt": "{file:./.opencode/prompts/reviewer.txt}"
+    },
+    "reflector": {
+      "description": "当迭代执行完成后需要复盘分析、流程改进建议或Reviewer评分后需要辅助评估时触发。适用于执行循环结束后的复盘阶段，不适用于任务执行过程中。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "mimo/mimo-pro",
+      "temperature": 0.2,
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      },
+      "prompt": "{file:./.opencode/prompts/reflector.txt}"
+    },
+    "researcher": {
+      "description": "当用户要求技术调研、方案分析、第三方库调研、技术选型或提出\"调研一下XXX技术\"时触发。适用于research标签任务，不适用于直接代码实现需求。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "minimax/m2.7",
+      "temperature": 0.3,
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      },
+      "prompt": "{file:./.opencode/prompts/researcher.txt}"
+    },
+    "tester": {
+      "description": "当用户提供头文件、函数签名、API接口并要求生成测试用例、测试代码或\"帮我写单元测试\"时触发。适用于C/Python嵌入式驱动项目，不适用于已经完成测试覆盖的场景。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "minimax/m2.7",
+      "temperature": 0.3,
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      },
+      "prompt": "{file:./.opencode/prompts/tester.txt}"
+    },
+    "data-processor": {
+      "description": "当用户要求数据处理、ETL、数据清洗、格式转换或提出\"帮我处理这些数据\"、\"转换数据格式\"时触发。适用于data标签任务，不适用于直接业务逻辑开发。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "minimax/m2.7",
+      "temperature": 0.2,
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      },
+      "prompt": "{file:./.opencode/prompts/data-processor.txt}"
+    },
+    "devops": {
+      "description": "当用户要求部署、CI/CD配置、Docker/Kubernetes环境搭建或提出\"帮我配置CI/CD\"、\"部署到生产环境\"时触发。适用于deploy标签任务，不适用于开发阶段代码编写。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "minimax/m2.7",
+      "temperature": 0.2,
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      },
+      "prompt": "{file:./.opencode/prompts/devops.txt}"
+    },
+    "docer": {
+      "description": "当用户要求生成技术文档、API文档、README或提出\"帮我写文档\"、\"生成使用文档\"时触发。适用于文档生成需求，不适用于代码实现任务。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "minimax/m2.7",
+      "temperature": 0.3,
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      },
+      "prompt": "{file:./.opencode/prompts/docer.txt}"
+    },
+    "integration-engineer": {
+      "description": "当用户要求API设计、系统集成方案、接口规范制定或提出\"设计API\"、\"帮我看看接口\"时触发。适用于integration标签任务，不适用于纯前端开发需求。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "mimo/mimo-pro",
+      "temperature": 0.2,
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      },
+      "prompt": "{file:./.opencode/prompts/integration-engineer.txt}"
+    },
+    "performance-engineer": {
+      "description": "当用户要求性能分析、瓶颈定位、性能优化或提出\"帮我分析性能问题\"、\"看看哪里有性能瓶颈\"时触发。适用于performance标签任务，不适用于功能正确性验证。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "mimo/mimo-omni",
+      "temperature": 0.2,
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      },
+      "prompt": "{file:./.opencode/prompts/performance-engineer.txt}"
+    },
+    "security-expert": {
+      "description": "当用户要求安全审计、漏洞检测、安全加固或提出\"帮我检查安全问题\"、\"看看有没有安全漏洞\"时触发。适用于security标签任务，不适用于功能开发需求。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "mimo/mimo-omni",
+      "temperature": 0.2,
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      },
+      "prompt": "{file:./.opencode/prompts/security-expert.txt}"
+    },
+    "ux-ui-designer": {
+      "description": "当用户要求界面设计、UI设计、用户体验优化或提出\"帮我设计界面\"、\"看看这个交互\"时触发。适用于ui/ux/design标签任务，不适用于后端逻辑开发需求。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "minimax/m2.7",
+      "temperature": 0.4,
+      "permission": {
+        "edit": "allow",
+        "bash": "deny"
+      },
+      "prompt": "{file:./.opencode/prompts/ux-ui-designer.txt}"
+    },
+    "project-explorer": {
+      "description": "当Master检测到已有项目、新任务进入项目、或用户要求项目分析时自动触发。适用于explore标签任务和项目初始化阶段，不适用于全新项目开发。",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "minimax/m2.7",
+      "temperature": 0.1,
+      "permission": {
+        "edit": "deny",
+        "bash": "deny",
+        "webfetch": "allow"
+      },
+      "prompt": "{file:./.opencode/prompts/project-explorer.txt}"
+    }
+  },
+  "provider": {
+    "mimo": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "MiMo Models",
+      "options": {
+        "baseURL": "https://api.xiaomi.com/v1"
+      },
+      "models": {
+        "mimo-pro": {
+          "name": "MiMo-V2-Pro",
+          "limit": {
+            "context": 1000000,
+            "output": 100000
+          }
+        },
+        "mimo-omni": {
+          "name": "MiMo-V2-Omni",
+          "limit": {
+            "context": 1000000,
+            "output": 100000
+          }
+        }
+      }
+    },
+    "minimax": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "MiniMax Models",
+      "options": {
+        "baseURL": "https://api.minimax.io/v1"
+      },
+      "models": {
+        "m2.7": {
+          "name": "MiniMax M2.7",
+          "limit": {
+            "context": 256000,
+            "output": 65536
+          }
+        }
+      }
+    }
+  },
+  "tools": {
+    "write": true,
+    "edit": true,
+    "bash": true,
+    "webfetch": true
+  },
+  "permission": {
+    "edit": "ask",
+    "bash": "ask",
+    "webfetch": "allow"
+  },
+  "rules": {
+    "agent_switch": "tab",
+    "variant_cycle": "ctrl+tab"
+  },
+  "theme": "opencode",
+  "share": "ask"
+}
