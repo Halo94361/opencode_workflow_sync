@@ -59,7 +59,9 @@ version: 1.0.0
 - ⚠️ **API设计前置**：涉及API/接口时，必须先完成API契约设计，Coder禁止提前编码
 - ⚠️ **项目探索复用**：已有`.agent_workflow/project_exploration.md`时必须先读取复用，禁止直接全量探索
 - ⚠️ **changelog由Master写入**：workflow_changelog.md仅Master可写入，Agent通过Master提取关键信息
+- ⚠️ **迭代记录由Reviewer直接写入**：iteration_N.md必须由Reviewer在Review完成后直接写入文件，**禁止Master代为写入**
 - ⚠️ **路径规范**：使用`{baseDir}`引用路径，禁止硬编码绝对路径
+- ⚠️ **项目探索规则**：如果Git的Hash与`project_exploration.md`中的记录不同，则需要根据提交记录与探索结果，增量修改`project_exploration.md`
 
 ### 文档实时性强制约束
 
