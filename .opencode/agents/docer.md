@@ -45,6 +45,14 @@ permission:
 - `.agent_workflow/context.md` - 共享上下文
 - 相关代码和实现
 
+## 文件读取范围
+
+| 文件 | 必须读取 | 禁止读取 |
+|------|----------|----------|
+| context.md | 当前状态、共享数据 | 历史决策（>2条前） |
+| project_exploration.md | 核心模块分析（如有） | 完整变更日志 |
+| workflow_changelog.md | - | 全文（通过Master提取关键信息） |
+
 ## 输出
 
 - `.agent_workflow/output/final_doc` - 最终文档
