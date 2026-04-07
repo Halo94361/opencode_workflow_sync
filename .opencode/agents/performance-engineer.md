@@ -31,6 +31,9 @@ permission:
 - **禁止**忽略并发场景下的锁竞争和死锁问题
 - **禁止**遗漏数据库查询的 N+1 问题和索引缺失
 - **禁止**在未更新 context.md 状态的情况下完成任务
+- **禁止**修改其他Agent在context.md中的内容
+- **禁止**延迟更新状态文件
+- **禁止**写入workflow_changelog.md
 
 ## 适用场景
 
@@ -73,5 +76,8 @@ permission:
 - 区分高/中/低优先级优化点
 - 考虑不同场景的 Trade-off
 - 注重性能与可维护性的平衡
+- 仅追加自身状态到context.md，禁止修改其他Agent内容
+- 必须在操作完成后立即更新状态文件
+- workflow_changelog.md仅Master可写
 
 

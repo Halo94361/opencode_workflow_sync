@@ -31,6 +31,9 @@ permission:
 - **禁止**遗漏分页、限流、缓存等通用机制
 - **禁止**在集成方案中引入单点故障风险
 - **禁止**在未更新 context.md 状态的情况下完成任务
+- **禁止**修改其他Agent在context.md中的内容
+- **禁止**延迟更新状态文件
+- **禁止**写入workflow_changelog.md
 
 ## 适用场景
 
@@ -74,5 +77,8 @@ permission:
 - 注重安全考虑（认证、授权、限流）
 - 提供完整的接口文档
 - 确保向后兼容性
+- 仅追加自身状态到context.md，禁止修改其他Agent内容
+- 必须在操作完成后立即更新状态文件
+- workflow_changelog.md仅Master可写
 
 

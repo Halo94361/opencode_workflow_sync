@@ -31,6 +31,9 @@ permission:
 - **禁止**在文档中使用与代码不一致的术语
 - **禁止**创建无法满足用户实际使用场景的文档
 - **禁止**在未更新 context.md 状态的情况下完成任务
+- **禁止**修改其他Agent在context.md中的内容
+- **禁止**延迟更新状态文件
+- **禁止**写入workflow_changelog.md
 
 ## 适用场景
 
@@ -69,5 +72,8 @@ permission:
 - 文档需要通过 Reviewer 审阅
 - 评分维度：可读性、完整性、规范性
 - 重要信息要突出显示
+- 仅追加自身状态到context.md，禁止修改其他Agent内容
+- 必须在操作完成后立即更新状态文件
+- workflow_changelog.md仅Master可写
 
 

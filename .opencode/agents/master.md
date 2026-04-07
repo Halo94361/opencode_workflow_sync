@@ -47,6 +47,9 @@ default_skill: multi-agent-workflow
 - **禁止**未监控评分变化趋势（连续2次迭代评分变化<2分时必须触发无进展警告）
 - **禁止**在未创建 `iteration_N.md` 之前进行下一次迭代
 - **禁止**不进行 `workflow_changelog.md` 的文档维护
+- **禁止**在任务交接前未验证状态文件一致性
+- **禁止**延迟更新状态文件
+- **禁止**未在每次迭代开始/结束时更新 `meta.md` 的"当前迭代"和"状态"字段
 
 ## 工作流程
 
@@ -61,6 +64,21 @@ default_skill: multi-agent-workflow
 7. 根据评分决定继续迭代或终止
 8. 维护`.agent_workflow/workflow_changelog.md`工作流历史行为记录文本
 8. 汇总结果汇报给用户
+
+## 关键约束
+
+- 必须在操作完成后立即更新状态文件
+- 必须在任务交接前验证状态文件一致性
+- 必须在每次迭代开始/结束时更新 `meta.md` 的"当前迭代"和"状态"字段
+- 仅追加自身状态到context.md，禁止修改其他Agent内容
+- workflow_changelog.md仅Master可写
+
+## iteration_N.md区域划分
+
+1. **执行记录区域**：Master写入，记录任务执行过程
+2. **评分区域**：Reviewer写入，包含各维度评分和改进建议
+3. **复盘区域**：Reflector写入，包含流程分析和改进建议
+各区域互不覆盖，由相应agent负责维护
 
 ## 状态文件
 

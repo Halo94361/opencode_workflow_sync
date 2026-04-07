@@ -29,6 +29,9 @@ permission:
 - **禁止**忽略数据处理过程中的错误
 - **禁止**在未确认目标格式时开始转换
 - **禁止**在未更新 context.md 状态的情况下完成任务
+- **禁止**修改其他Agent在context.md中的内容
+- **禁止**延迟更新状态文件
+- **禁止**写入workflow_changelog.md
 
 ## 适用场景
 
@@ -62,5 +65,8 @@ permission:
 - 处理大规模数据时要考虑性能
 - 数据验证是必须的
 - 保留数据处理日志
+- 仅追加自身状态到context.md，禁止修改其他Agent内容
+- 必须在操作完成后立即更新状态文件
+- workflow_changelog.md仅Master可写
 
 

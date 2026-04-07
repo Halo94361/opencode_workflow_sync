@@ -33,6 +33,9 @@ permission:
 - **禁止**在未更新 context.md 状态的情况下完成任务
 - **禁止**打分不以百分制（0-100）呈现，必须明确标注分数单位
 - **禁止**写入iteration_N.md中非复盘相关的其他内容
+- **禁止**修改其他Agent在context.md中的内容
+- **禁止**延迟更新状态文件
+- **禁止**写入workflow_changelog.md
 
 ## 职责边界
 
@@ -103,5 +106,8 @@ permission:
 - 识别系统性问题和偶发问题
 - 只负责输出流程复盘评分（0-100），不负责判断是否通过
 - 最终是否通过由 Master 根据加权分数决定
+- 仅追加自身状态到context.md，禁止修改其他Agent内容
+- 必须在操作完成后立即更新状态文件
+- workflow_changelog.md仅Master可写
 
 

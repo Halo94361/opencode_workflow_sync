@@ -242,17 +242,41 @@ Agent 间互相验证、监督：
 
 ### 7.2 文件说明
 
-| 文件 | 维护者 | 内容 |
-|------|--------|------|
-| meta.md | Master | 工作流整体状态、开始/结束时间 |
-| task_list.md | Architect | 拆解后的模块任务列表 |
-| execution_plan.md | Architect | 任务分配、并行策略、执行顺序 |
-| context.md | 各Agent | 共享信息传递 |
-| scores.md | Master | 每轮迭代的评分明细及最终得分 |
-| iterations/N.md | Master | 每次迭代的详细记录 |
-| output/final_* | Docer/Coder | 最终产出物 |
+| 文件 | 维护者 | 更新时机 | 内容 | 操作约束 |
+|------|--------|----------|------|----------|
+| meta.md | Master | 每次迭代开始/结束 | 工作流整体状态、开始/结束时间 | 必须更新当前迭代和状态字段 |
+| task_list.md | Architect | 任务拆解完成后 | 拆解后的模块任务列表 | 禁止修改已确认的计划 |
+| execution_plan.md | Architect | 任务拆解完成后 | 任务分配、并行策略、执行顺序 | 禁止修改已确认的计划 |
+| context.md | 各Agent | 任务交接/状态变更 | 共享信息传递 | 仅追加自身状态，禁止修改其他Agent内容；必须立即更新 |
+| scores.md | Master | 每次评分后 | 每轮迭代的评分明细及最终得分 | 仅Master可写 |
+| iterations/N.md | Master统筹 | 迭代结束后 | 每次迭代的详细记录 | Master写入执行记录，Reviewer写入评分区域，Reflector写入复盘区域 |
+| workflow_changelog.md | Master | 每次工作流行为后 | 工作流历史行为记录 | 仅Master可写，Agent通过Master提取关键信息 |
+| output/final_* | Docer/Coder | 任务完成后 | 最终产出物 | 禁止写入workflow_changelog.md |
 
 ---
+
+### 7.3 文档操作约束
+
+#### 7.3.1 通用约束（所有Agent）
+- **禁止**修改其他Agent在context.md中的内容，仅追加自身状态
+- **禁止**延迟更新状态文件，必须在操作完成后立即更新
+- **禁止**写入workflow_changelog.md（仅Master可写）
+
+#### 7.3.2 Master特殊约束
+- 必须在任务交接前验证状态文件一致性
+- 必须在每次迭代开始/结束时更新meta.md的"当前迭代"和"状态"字段
+- 必须维护workflow_changelog.md，记录每次工作流行为
+
+#### 7.3.3 iteration_N.md区域划分
+1. **执行记录区域**：Master写入，记录任务执行过程
+2. **评分区域**：Reviewer写入，包含各维度评分和改进建议
+3. **复盘区域**：Reflector写入，包含流程分析和改进建议
+各区域互不覆盖，由相应agent负责维护
+
+#### 7.3.4 验证机制
+- Master在任务交接前必须验证状态文件一致性
+- 状态文件时间戳与实际执行时间偏差超过5分钟时，触发警告
+- 警告后必须补全文档后才能继续执行
 
 ## 八、用户干预点
 
@@ -274,3 +298,4 @@ Agent 间互相验证、监督：
 5. **状态持久化**：所有关键状态存入 .agent_workflow/ 目录
 6. **API 设计前置**：涉及 API/接口的任务必须先完成 API 设计流程
 7. **禁止跳过审查**：API 设计必须经过 Architect 审查才能进入编码阶段
+8. **文档操作约束**：所有Agent必须遵守文档实时性约束，禁止修改其他Agent内容，必须立即更新状态文件
