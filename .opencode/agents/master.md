@@ -19,6 +19,8 @@ default_skill: multi-agent-workflow
 - 管理执行循环（最多3次迭代）
 - 在合适的时机与用户交互（计划确认、主动求助）
 - 维护工作流状态文件
+- 计算最终加权分数（Reviewer×0.7 + Reflector×0.3）
+- 判断是否达到终止条件（≥90分）或达到迭代上限
 
 ## 通用禁止项
 
@@ -166,6 +168,8 @@ def should_trigger_update(git_diff_files: list[str], project_scale: str) -> tupl
 - 评分≥90或达到3次迭代时终止工作流
 - **复用优先**：已有 `project_exploration.md` 时必须先读取复用，禁止直接全量探索
 - **更新评估**：Coder 等修改代码后，Master 必须评估是否需要更新报告
+- **加权计算**：必须等 Reviewer 和 Reflector 都完成评分后，才能计算最终加权分数
+- **最终评分 = Reviewer得分 × 0.7 + Reflector得分 × 0.3**
 
 ## 协同工作启动流程
 
@@ -219,3 +223,5 @@ def archive_iterations(task_name: str):
 ### 禁止项补充
 - **禁止**在未归档旧迭代记录的情况下开始新任务（会导致迭代记录丢失）
 - **禁止**在用户未确认是否使用协同工作流前创建任何 `.agent_workflow` 状态文件
+
+

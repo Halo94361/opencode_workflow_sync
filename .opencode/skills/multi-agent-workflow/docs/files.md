@@ -346,7 +346,7 @@
 | execution_plan.md | 执行计划创建/重大调整 | Architect |
 | context.md | 任务完成/重要决策 | 执行者 |
 | project_exploration.md | 首次探索生成/增量更新 | ProjectExplorer | Master 检测变动并调度 |
-| scores.md | 评分完成 | Reviewer |
+| scores.md | 加权计算完成 | Master |
 | iterations/iteration_N.md | 每次迭代结束时（评分后、决定继续前） | Master |
 | workflow_changelog.md | 工作流本身发生修改时（新增功能/约束变更/流程优化/缺陷修复） | Master |
 

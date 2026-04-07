@@ -179,6 +179,47 @@ opencode cost
 - 定期评估输出质量
 - 根据反馈调整配置
 
+## ⚠️ 重要配置规则
+
+### 本地配置优先原则
+为了确保不同用户的兼容性和配置一致性，**所有模型调用策略必须在本地的 `opencode.json` 文件中进行配置**，而不能通过修改 `.opencode/agents/` 目录下的Agent定义文件来操作。
+
+### 配置优先级
+1. **本地 `opencode.json`**：项目级别的配置，最高优先级
+2. **全局 `~/.config/opencode/opencode.json`**：用户级别的配置，中等优先级
+3. **`.opencode/agents/` 目录**：仅用于定义Agent的基本行为和描述，**禁止在此修改模型分配**
+
+### 为什么不能修改 `.opencode/agents/` 文件？
+1. **兼容性问题**：不同用户的 `.opencode/agents/` 目录可能不同，直接修改会导致配置冲突
+2. **版本控制问题**：`.opencode/agents/` 目录通常不纳入版本控制，修改无法共享
+3. **覆盖问题**：本地 `opencode.json` 配置会覆盖 `.opencode/agents/` 中的模型设置，修改无效
+4. **维护问题**：集中配置便于维护和更新，分散修改容易导致混乱
+
+### 正确的配置方式
+```json
+// 在 opencode.json 中配置模型分配
+{
+  "agents": {
+    "coder": {
+      "model": "mimo/mimo-pro",  // 通过opencode.json修改模型
+      "temperature": 0.3
+    },
+    "architect": {
+      "model": "mimo/mimo-omni"  // 可以覆盖默认分配
+    }
+  }
+}
+```
+
+### 错误的做法
+```bash
+# ❌ 错误：直接修改 .opencode/agents/coder.md 中的模型配置
+# 这样做会导致：
+# 1. 其他用户拉取代码后配置失效
+# 2. 本地opencode.json配置被忽略
+# 3. 配置管理混乱
+```
+
 ## 🛠️ 自定义配置
 
 ### 修改模型分配

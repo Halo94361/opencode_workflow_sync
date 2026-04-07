@@ -248,7 +248,7 @@ Agent 间互相验证、监督：
 | task_list.md | Architect | 拆解后的模块任务列表 |
 | execution_plan.md | Architect | 任务分配、并行策略、执行顺序 |
 | context.md | 各Agent | 共享信息传递 |
-| scores.md | Reviewer | 每轮迭代的评分明细 |
+| scores.md | Master | 每轮迭代的评分明细及最终得分 |
 | iterations/N.md | Master | 每次迭代的详细记录 |
 | output/final_* | Docer/Coder | 最终产出物 |
 
