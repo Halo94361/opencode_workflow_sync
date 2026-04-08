@@ -151,17 +151,49 @@ version: 1.0.0
 
 ## 术语表
 
+### Agent 角色
+
+| Agent | 类型 | 职责 |
+|-------|------|------|
+| Master | 主调度 | 协调整个工作流、用户交互、流程控制 |
+| Architect | 架构师 | 任务拆解、标签标注、专业匹配、并行规划、API结构审查 |
+| Project-explorer | 探索 | 项目文件夹的结构和内容探索，维护 project_exploration.md |
+| Coder | 编码 | 业务代码实现 |
+| Reviewer | 审查 | 多维度质量评分（权重0.7） |
+| Reflector | 复盘 | 复盘分析、流程改进建议（权重0.3） |
+| Researcher | 调研 | 技术调研、方案分析、第三方库调研、技术选型 |
+| Tester | 测试 | 测试编写、测试用例设计、单元测试生成 |
+| DevOps | 部署 | 部署、CI/CD配置、Docker/Kubernetes环境搭建 |
+| DataProcessor | 数据 | 数据处理、ETL、数据清洗、格式转换 |
+| SecurityExpert | 安全 | 安全审计、漏洞检测、安全加固 |
+| PerformanceEngineer | 性能 | 性能分析、瓶颈定位、性能优化 |
+| IntegrationEngineer | 集成 | API设计、接口规范、系统集成 |
+| UXUIDesigner | 设计 | 界面设计、UI设计、用户体验优化 |
+| Docer | 文档 | 技术文档生成、API文档、README |
+
+### 任务标签映射
+
+| 任务标签 | 匹配Agent | 并行上限 |
+|----------|-----------|----------|
+| `[data]` | DataProcessor | 3 |
+| `[security]` | SecurityExpert | 3 |
+| `[test]` | Tester | 3 |
+| `[deploy]` | DevOps | 3 |
+| `[research]` | Researcher | 3 |
+| `[performance]` | PerformanceEngineer | 3 |
+| `[integration]` | IntegrationEngineer | 3 |
+| `[ui]` / `[ux]` / `[design]` | UXUIDesigner | 3 |
+| `[doc]` | Docer | 3 |
+| `[default]` | Coder | 3 |
+
+### 工作流术语
+
 | 术语 | 说明 |
 |------|------|
-| Master | 主调度代理，负责协调整个工作流 |
-| Architect | 架构师代理，负责任务拆解和API审查 |
-| Project-explorer | 项目探索者，负责项目文件夹的结构和内容探索 |
-| Coder | 编码代理，负责代码实现 |
-| Reviewer | 审查代理，负责质量评分（权重0.7） |
-| Reflector | 复盘代理，负责迭代决策（权重0.3） |
 | iteration | 迭代，一次完整的执行-评分循环 |
 | task_list | 任务列表，由Architect生成 |
 | context | 共享上下文，各Agent维护的状态信息 |
+| execution_plan | 执行计划，含并行分配方案 |
 
 ## 版本规范
 
