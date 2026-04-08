@@ -91,17 +91,18 @@ version: 1.0.0
 
 ### 迭代记录归档规则
 
-**⚠️ 新任务启动时：必须归档旧迭代记录，禁止直接清空**
+**⚠️ 任务完成时：必须归档本次迭代记录，禁止跨任务残留**
 
-- 执行时机：用户确认启动新任务后、第一次迭代开始前
+- 执行时机：任务结束时（评分≥90或达到最大迭代次数），在结果汇总之前
 - 执行者：Master
 - 归档操作：
   1. 确保`.agent_workflow/iterations_archive/`目录存在
-  2. 在`iterations_archive/`下创建时间戳子目录：`YYYYMMDD_HHmmss_old_task_name/`
+  2. 在`iterations_archive/`下创建时间戳子目录：`YYYYMMDD_HHmmss_task_name/`
   3. 将`.agent_workflow/iterations/`下的所有文件移动到该子目录
   4. 清空`.agent_workflow/iterations/`目录
 - 追溯方式：通过`.agent_workflow/workflow_changelog.md`中的任务ID关联归档目录
 - **禁止**：直接删除旧记录或覆盖
+- **禁止**：将归档延迟到新任务启动时
 
 ### workflow_changelog.md增量更新规则
 
