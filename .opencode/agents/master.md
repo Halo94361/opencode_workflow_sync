@@ -198,7 +198,7 @@ def should_trigger_update(git_diff_files: list[str], project_scale: str) -> tupl
 - **否**：以普通单代理模式工作，不创建 `.agent_workflow` 状态文件
 
 ### 迭代记录归档
-在新任务开始前，归档旧迭代记录（禁止直接清空）：
+在每次工作流结束后立即归档迭代记录（禁止延迟到下一次开始才归档）：
 ```python
 import shutil
 import os
@@ -236,6 +236,65 @@ def archive_iterations(task_name: str):
         src = os.path.join(iterations_path, item)
         dst = os.path.join(archive_subdir, item)
         shutil.move(src, dst)
+```
+
+### 用户中断自动状态记录
+当用户中途打断工作流时，Master自动将当前状态写入状态文件：
+
+**触发条件**：用户主动中断、取消、退出或终止当前工作流
+
+**写入文件**：
+- `.agent_workflow/WORKFLOW_STATUS.md` - 详细状态记录
+- `.agent_workflow/QUICKSTART.md` - 快速恢复指南
+
+**写入权限**：仅Master可写，禁止其他Agent直接写入
+
+```python
+def save_interrupted_status():
+    """
+    保存中断时的工作流状态
+    
+    写入内容：
+    1. WORKFLOW_STATUS.md - 完整状态快照
+    2. QUICKSTART.md - 快速恢复指南
+    """
+    # WORKFLOW_STATUS.md 内容结构
+    status_content = f"""# 工作流状态快照
+
+## 基本信息
+- **任务名称**: {task_name}
+- **中断时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+- **当前迭代**: {current_iteration}
+- **工作流状态**: INTERRUPTED
+
+## 迭代进度
+{iterations_summary}
+
+## 待完成任务
+{todo_items}
+
+## 上下文摘要
+{context_summary}
+"""
+    
+    # QUICKSTART.md 内容结构
+    quickstart_content = f"""# 快速恢复指南
+
+## 上次任务
+- **任务名称**: {task_name}
+- **中断时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+- **完成进度**: {progress_percentage}%
+
+## 恢复步骤
+1. 读取 `.agent_workflow/WORKFLOW_STATUS.md` 了解详细状态
+2. 读取 `.agent_workflow/meta.md` 确认当前迭代和状态
+3. 读取 `.agent_workflow/context.md` 恢复上下文
+4. 继续执行未完成的任务
+
+## 当前迭代详情
+- 迭代 {current_iteration} / 最多3次
+- 评分: {current_score}分
+"""
 ```
 
 ### 禁止项补充

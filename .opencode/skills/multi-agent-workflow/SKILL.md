@@ -104,6 +104,56 @@ version: 1.0.0
 - **禁止**：直接删除旧记录或覆盖
 - **禁止**：将归档延迟到新任务启动时
 
+### 用户中断自动状态记录
+
+**触发条件**：用户主动中断、取消、退出或终止当前工作流
+
+**写入文件**：
+- `.agent_workflow/WORKFLOW_STATUS.md` - 详细状态记录
+- `.agent_workflow/QUICKSTART.md` - 快速恢复指南
+
+**写入权限**：仅Master可写，禁止其他Agent直接写入
+
+**WORKFLOW_STATUS.md 内容结构**：
+```markdown
+# 工作流状态快照
+
+## 基本信息
+- **任务名称**: {task_name}
+- **中断时间**: {timestamp}
+- **当前迭代**: {current_iteration}
+- **工作流状态**: INTERRUPTED
+
+## 迭代进度
+{iterations_summary}
+
+## 待完成任务
+{todo_items}
+
+## 上下文摘要
+{context_summary}
+```
+
+**QUICKSTART.md 内容结构**：
+```markdown
+# 快速恢复指南
+
+## 上次任务
+- **任务名称**: {task_name}
+- **中断时间**: {timestamp}
+- **完成进度**: {progress_percentage}%
+
+## 恢复步骤
+1. 读取 `.agent_workflow/WORKFLOW_STATUS.md` 了解详细状态
+2. 读取 `.agent_workflow/meta.md` 确认当前迭代和状态
+3. 读取 `.agent_workflow/context.md` 恢复上下文
+4. 继续执行未完成的任务
+
+## 当前迭代详情
+- 迭代 {current_iteration} / 最多3次
+- 评分: {current_score}分
+```
+
 ### workflow_changelog.md增量更新规则
 
 **⚠️ workflow_changelog.md始终维护增量更新：每次工作流行为后立即写入本次工作总结**

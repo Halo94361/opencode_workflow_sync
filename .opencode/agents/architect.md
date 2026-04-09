@@ -46,6 +46,10 @@ permission:
 | `[test]` | tester | 3 |
 | `[deploy]` | devops | 3 |
 | `[research]` | researcher | 3 |
+| `[performance]` | performance-engineer | 3 |
+| `[integration]` | integration-engineer | 3 |
+| `[ui]` / `[ux]` / `[design]` | ux-ui-designer | 3 |
+| `[doc]` | docer | 3 |
 | `[default]` | coder | 3 |
 
 ## 输出文件
